@@ -1,315 +1,330 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Treino</title>
+  <title>Treino</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 
-<style>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #020617;
+      --primary: #38bdf8;
+      --secondary: #22c55e;
+      --text: #e5e7eb;
+      --muted: #64748b;
+    }
 
-:root{
-  --bg:#0f172a;
-  --card:#020617;
-  --primary:#38bdf8;
-  --secondary:#22c55e;
-  --text:#e5e7eb;
-  --muted:#64748b;
-}
+    body {
+      font-family: Montserrat, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 14px;
+    }
 
-body{
-  font-family:Inter,system-ui,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  padding:14px;
-}
+    h1 {
+      text-align: center;
+      font-size: 3.2em;
+      color: var(--primary);
+      margin-bottom: 20px;
+    }
 
-h1{
-  text-align:center;
-  font-size:2.4em;
-  color:var(--primary);
-  margin-bottom:20px;
-}
+    .exercise {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
 
-.exercise{
-  background:var(--card);
-  border-radius:14px;
-  padding:16px;
-  margin-bottom:16px;
-}
+    .title {
+      font-size: 1.3em;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
 
-.title{
-  font-size:1.3em;
-  font-weight:700;
-  margin-bottom:8px;
-}
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
 
-.row{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-bottom:6px;
-}
+    .row span {
+      background: #020617;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
 
-.row span{
-  background:#020617;
-  padding:4px 8px;
-  border-radius:6px;
-}
+    .row span[contenteditable] {
+      border-bottom: 1px dashed var(--primary);
+      outline: none;
+    }
 
-.row span[contenteditable]{
-  border-bottom:1px dashed var(--primary);
-  outline:none;
-}
+    .obs {
+      background: #020617;
+      padding: 6px;
+      border-radius: 6px;
+      font-size: .9em;
+      margin-bottom: 10px;
+    }
 
-.obs{
-  background:#020617;
-  padding:6px;
-  border-radius:6px;
-  font-size:.9em;
-  margin-bottom:10px;
-}
+    .obs[contenteditable] {
+      border: 1px dashed var(--primary);
+    }
 
-.obs[contenteditable]{
-  border:1px dashed var(--primary);
-}
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 130px;
+      gap: 12px;
+      align-items: center;
+    }
 
-.grid{
-  display:grid;
-  grid-template-columns:1fr 130px;
-  gap:12px;
-  align-items:center;
-}
+    .series {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-.series{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
+    .series-row {
+      display: flex;
+      gap: 10px;
+    }
 
-.series-row{
-  display:flex;
-  gap:10px;
-}
+    button {
+      flex: 1;
+      padding: 8px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+    }
 
-button{
-  flex:1;
-  padding:8px;
-  border-radius:8px;
-  border:none;
-  font-weight:600;
-}
+    .start {
+      background: var(--secondary);
+    }
 
-.start{background:var(--secondary);}
-.finish{background:var(--primary);}
-.done{
-  background:#020617;
-  color:var(--muted);
-  border:1px solid var(--muted);
-}
+    .finish {
+      background: var(--primary);
+    }
 
-.blink{
-  animation:pulse 1s infinite;
-}
+    .done {
+      background: #020617;
+      color: var(--muted);
+      border: 1px solid var(--muted);
+    }
 
-@keyframes pulse{
-  0%{opacity:1}
-  50%{opacity:.4}
-  100%{opacity:1}
-}
+    .blink {
+      animation: pulse 1s infinite;
+    }
 
-.timer{
-  font-size:2.5em;
-  font-weight:700;
-  text-align:center;
-  color:var(--muted);
-  opacity:.7;
-}
+    @keyframes pulse {
+      0% {
+        opacity: 1
+      }
 
-.timer.run{
-  color:var(--primary);
-  opacity:1;
-}
+      50% {
+        opacity: .4
+      }
 
-ul{padding-left:18px}
+      100% {
+        opacity: 1
+      }
+    }
 
-</style>
+    .timer {
+      font-size: 2.5em;
+      font-weight: 700;
+      text-align: center;
+      color: var(--muted);
+      opacity: .7;
+    }
+
+    .timer.run {
+      color: var(--primary);
+      opacity: 1;
+    }
+
+    ul {
+      padding-left: 18px
+    }
+  </style>
 </head>
 
 <body>
 
-<h1>Treino</h1>
+  <h1>Treino</h1>
 
-<div id="app"></div>
+  <div id="app"></div>
 
-<script>
+  <script>
 
-/* ================= DADOS ================= */
+    /* ================= DADOS ================= */
 
-const exercises = [
+    const exercises = [
 
-/* 1. Mobilidade */
-{
-  name:"Mobilidade",
-  reps:"Sequência",
-  load:"0 kg",
-  mobility:true,
-  list:[
-    "Floppy arm – 10",
-    "Cat/cow – 10",
-    "Forward roll – 10",
-    "Best stretch – 10",
-    "Saudação – 3"
-  ]
-},
+      /* 1. Mobilidade */
+      {
+        name: "Mobilidade",
+        reps: "Sequência",
+        load: "0 kg",
+        mobility: true,
+        list: [
+          "Floppy arm – 10",
+          "Cat/cow – 10",
+          "Forward roll – 10",
+          "Best stretch – 10",
+          "Saudação – 3"
+        ]
+      },
 
-/* 2. Prancha */
-{
-  name:"Prancha",
-  reps:"30 s",
-  load:"0 kg",
-  time:30,
-  rest:30
-},
+      /* 2. Prancha */
+      {
+        name: "Prancha",
+        reps: "30 s",
+        load: "0 kg",
+        time: 30,
+        rest: 30
+      },
 
-/* 3. Avião / Remada */
-{
-  name:"Avião / Remada",
-  reps:"10 / 10–12",
-  load:"0 kg / elástico",
-  time:40,
-  rest:30
-},
+      /* 3. Avião / Remada */
+      {
+        name: "Avião / Remada",
+        reps: "10 / 10–12",
+        load: "0 kg / elástico",
+        time: 40,
+        rest: 30
+      },
 
-/* 4. Pallof */
-{
-  name:"Pallof",
-  reps:"10–12 / lado",
-  load:"elástico",
-  time:40,
-  rest:30
-},
+      /* 4. Pallof */
+      {
+        name: "Pallof",
+        reps: "10–12 / lado",
+        load: "elástico",
+        time: 40,
+        rest: 30
+      },
 
-/* 5. Barra */
-{
-  name:"Barra fixa",
-  reps:"6–8 / 10–12",
-  load:"peso corporal",
-  time:40,
-  rest:0
-},
+      /* 5. Barra */
+      {
+        name: "Barra fixa",
+        reps: "6–8 / 10–12",
+        load: "peso corporal",
+        time: 40,
+        rest: 0
+      },
 
-/* 6. Agachamento */
-{
-  name:"Agachamento",
-  reps:"12",
-  load:"5 kg",
-  time:40,
-  rest:30
-},
+      /* 6. Agachamento */
+      {
+        name: "Agachamento",
+        reps: "12",
+        load: "5 kg",
+        time: 40,
+        rest: 30
+      },
 
-/* 7. Terra */
-{
-  name:"Terra KB",
-  reps:"12",
-  load:"15 kg",
-  time:40,
-  rest:30
-},
+      /* 7. Terra */
+      {
+        name: "Terra KB",
+        reps: "12",
+        load: "15 kg",
+        time: 40,
+        rest: 30
+      },
 
-/* 8. Flexão */
-{
-  name:"Flexão",
-  reps:"8–12",
-  load:"peso corporal",
-  time:40,
-  rest:30
-},
+      /* 8. Flexão */
+      {
+        name: "Flexão",
+        reps: "8–12",
+        load: "peso corporal",
+        time: 40,
+        rest: 30
+      },
 
-/* 9. Final – Ombro */
-{
-  name:"Final – Ombro",
-  reps:"Rotação ext. 10 / Sleeper 1",
-  load:"4 kg / sem peso",
-  mobility:true,
-  list:[
-    "Rotação externa do antebraço – 10 (4 kg)",
-    "Sleepers stretch – 1 (sem peso)"
-  ]
-}
+      /* 9. Final – Ombro */
+      {
+        name: "Final – Ombro",
+        reps: "Rotação ext. 10 / Sleeper 1",
+        load: "4 kg / sem peso",
+        mobility: true,
+        list: [
+          "Rotação externa do antebraço – 10 (4 kg)",
+          "Sleepers stretch – 1 (sem peso)"
+        ]
+      }
 
-];
-
-
-/* ================= TIMER ================= */
-
-let currentTimer=null;
-
-function startCountdown(seconds,display,btn){
-
-  clearInterval(currentTimer);
-
-  document
-    .querySelectorAll(".blink")
-    .forEach(b=>b.classList.remove("blink"));
-
-  btn.classList.add("blink");
-
-  let t = seconds;
-
-  display.classList.add("run");
-  display.textContent = format(t);
-
-  currentTimer = setInterval(()=>{
-
-    t--;
-
-    display.textContent = format(t);
-
-  },1000);
-}
-
-function format(s){
-
-  const sign = s < 0 ? "-" : "";
-
-  s = Math.abs(s);
-
-  return sign + "0:" + s.toString().padStart(2,"0");
-}
+    ];
 
 
-/* ================= RENDER ================= */
+    /* ================= TIMER ================= */
 
-const app = document.getElementById("app");
+    let currentTimer = null;
 
-function render(){
+    function startCountdown(seconds, display, btn) {
 
-  exercises.forEach((ex,i)=>{
+      clearInterval(currentTimer);
 
-    const div = document.createElement("div");
-    div.className = "exercise";
+      document
+        .querySelectorAll(".blink")
+        .forEach(b => b.classList.remove("blink"));
 
-    let mobilityHTML = "";
+      btn.classList.add("blink");
 
-    if(ex.mobility){
+      let t = seconds;
 
-      mobilityHTML = `
-        <ul>
-          ${ex.list.map(e=>`<li>${e}</li>`).join("")}
-        </ul>
-      `;
+      display.classList.add("run");
+      display.textContent = format(t);
+
+      currentTimer = setInterval(() => {
+
+        t--;
+
+        display.textContent = format(t);
+
+      }, 1000);
     }
 
-    let seriesHTML = "";
+    function format(s) {
 
-    if(!ex.mobility){
+      const sign = s < 0 ? "-" : "";
 
-      for(let s=1;s<=3;s++){
+      s = Math.abs(s);
 
-        seriesHTML += `
+      return sign + "0:" + s.toString().padStart(2, "0");
+    }
+
+
+    /* ================= RENDER ================= */
+
+    const app = document.getElementById("app");
+
+    function render() {
+
+      exercises.forEach((ex, i) => {
+
+        const div = document.createElement("div");
+        div.className = "exercise";
+
+        let mobilityHTML = "";
+
+        if (ex.mobility) {
+
+          mobilityHTML = `
+        <ul>
+          ${ex.list.map(e => `<li>${e}</li>`).join("")}
+        </ul>
+      `;
+        }
+
+        let seriesHTML = "";
+
+        if (!ex.mobility) {
+
+          for (let s = 1; s <= 3; s++) {
+
+            seriesHTML += `
           <div class="series-row">
 
             <button class="start">▶ Série ${s}</button>
@@ -318,12 +333,12 @@ function render(){
 
           </div>
         `;
-      }
-    }
+          }
+        }
 
-    div.innerHTML = `
+        div.innerHTML = `
 
-      <div class="title">${i+1}. ${ex.name}</div>
+      <div class="title">${i + 1}. ${ex.name}</div>
 
       <div class="row">
         <span>Reps:</span>
@@ -351,59 +366,60 @@ function render(){
 
     `;
 
-    app.appendChild(div);
-  });
+        app.appendChild(div);
+      });
 
-}
+    }
 
 
-/* ================= LIGA BOTÕES ================= */
+    /* ================= LIGA BOTÕES ================= */
 
-function bind(){
+    function bind() {
 
-  document.querySelectorAll(".exercise").forEach((box,i)=>{
+      document.querySelectorAll(".exercise").forEach((box, i) => {
 
-    if(exercises[i].mobility) return;
+        if (exercises[i].mobility) return;
 
-    const timer = box.querySelector(".timer");
+        const timer = box.querySelector(".timer");
 
-    box.querySelectorAll(".start").forEach(btn=>{
+        box.querySelectorAll(".start").forEach(btn => {
 
-      btn.addEventListener("click",()=>{
+          btn.addEventListener("click", () => {
 
-        startCountdown(exercises[i].time,timer,btn);
+            startCountdown(exercises[i].time, timer, btn);
+
+          });
+
+        });
+
+        box.querySelectorAll(".finish").forEach(btn => {
+
+          btn.addEventListener("click", () => {
+
+            startCountdown(exercises[i].rest, timer, btn);
+
+            const start = btn.previousElementSibling;
+
+            start.className = "done";
+            start.textContent = "Feito";
+            start.disabled = true;
+
+          });
+
+        });
 
       });
 
-    });
-
-    box.querySelectorAll(".finish").forEach(btn=>{
-
-      btn.addEventListener("click",()=>{
-
-        startCountdown(exercises[i].rest,timer,btn);
-
-        const start = btn.previousElementSibling;
-
-        start.className="done";
-        start.textContent="Feito";
-        start.disabled=true;
-
-      });
-
-    });
-
-  });
-
-}
+    }
 
 
-/* ================= INIT ================= */
+    /* ================= INIT ================= */
 
-render();
-bind();
+    render();
+    bind();
 
-</script>
+  </script>
 
 </body>
+
 </html>
