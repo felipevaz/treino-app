@@ -7,20 +7,20 @@
 
   <title>Treino</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Fonte Outfit -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --bg: #0f172a;
       --card: #020617;
-      --primary: #38bdf8;
-      --secondary: #22c55e;
       --text: #e5e7eb;
       --muted: #64748b;
+      --neg: #ef4444;
     }
 
     body {
-      font-family: Montserrat, system-ui, sans-serif;
+      font-family: 'Outfit', sans-serif;
       background: var(--bg);
       color: var(--text);
       padding: 14px;
@@ -28,68 +28,61 @@
 
     h1 {
       text-align: center;
-      font-size: 3.2em;
-      color: var(--primary);
+      font-size: 2.4em;
+      font-weight: 700;
       margin-bottom: 20px;
     }
 
     .exercise {
       background: var(--card);
-      border-radius: 14px;
+      border-radius: 12px;
       padding: 16px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
 
     .title {
-      font-size: 1.3em;
+      font-size: 1.4em;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .row {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .row span {
       background: #020617;
       padding: 4px 8px;
       border-radius: 6px;
+      font-size: 0.95em;
     }
 
     .row span[contenteditable] {
-      border-bottom: 1px dashed var(--primary);
-      outline: none;
+      border-bottom: 1px dashed var(--text);
     }
 
     .obs {
       background: #020617;
       padding: 6px;
       border-radius: 6px;
-      font-size: .9em;
+      font-size: 0.9em;
       margin-bottom: 10px;
     }
 
     .obs[contenteditable] {
-      border: 1px dashed var(--primary);
+      border: 1px dashed var(--text);
     }
 
     .grid {
       display: grid;
-      grid-template-columns: 1fr 130px;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .series {
-      display: flex;
-      flex-direction: column;
+      grid-template-rows: auto repeat(3, auto);
       gap: 10px;
     }
 
-    .series-row {
+    .button-row {
       display: flex;
       gap: 10px;
     }
@@ -100,20 +93,17 @@
       border-radius: 8px;
       border: none;
       font-weight: 600;
+      font-size: 0.95em;
+      color: black;
+      min-width: 0;
     }
 
     .start {
-      background: var(--secondary);
+      background: #22c55e;
     }
 
     .finish {
-      background: var(--primary);
-    }
-
-    .done {
-      background: #020617;
-      color: var(--muted);
-      border: 1px solid var(--muted);
+      background: #38bdf8;
     }
 
     .blink {
@@ -122,35 +112,27 @@
 
     @keyframes pulse {
       0% {
-        opacity: 1
+        opacity: 1;
       }
 
       50% {
-        opacity: .4
+        opacity: 0.4;
       }
 
       100% {
-        opacity: 1
+        opacity: 1;
       }
     }
 
     .timer {
-      font-size: 2.5em;
+      font-size: 2.6em;
       font-weight: 700;
       text-align: center;
+      margin-bottom: 8px;
       color: var(--muted);
-      opacity: .7;
-    }
-
-    .timer.run {
-      color: var(--primary);
-      opacity: 1;
-    }
-
-    ul {
-      padding-left: 18px
     }
   </style>
+
 </head>
 
 <body>
@@ -165,7 +147,6 @@
 
     const exercises = [
 
-      /* 1. Mobilidade */
       {
         name: "Mobilidade",
         reps: "Sequência",
@@ -180,7 +161,6 @@
         ]
       },
 
-      /* 2. Prancha */
       {
         name: "Prancha",
         reps: "30 s",
@@ -188,8 +168,6 @@
         time: 30,
         rest: 30
       },
-
-      /* 3. Avião / Remada */
       {
         name: "Avião / Remada",
         reps: "10 / 10–12",
@@ -197,8 +175,6 @@
         time: 40,
         rest: 30
       },
-
-      /* 4. Pallof */
       {
         name: "Pallof",
         reps: "10–12 / lado",
@@ -206,8 +182,6 @@
         time: 40,
         rest: 30
       },
-
-      /* 5. Barra */
       {
         name: "Barra fixa",
         reps: "6–8 / 10–12",
@@ -215,8 +189,6 @@
         time: 40,
         rest: 0
       },
-
-      /* 6. Agachamento */
       {
         name: "Agachamento",
         reps: "12",
@@ -224,8 +196,6 @@
         time: 40,
         rest: 30
       },
-
-      /* 7. Terra */
       {
         name: "Terra KB",
         reps: "12",
@@ -233,8 +203,6 @@
         time: 40,
         rest: 30
       },
-
-      /* 8. Flexão */
       {
         name: "Flexão",
         reps: "8–12",
@@ -242,8 +210,6 @@
         time: 40,
         rest: 30
       },
-
-      /* 9. Final – Ombro */
       {
         name: "Final – Ombro",
         reps: "Rotação ext. 10 / Sleeper 1",
@@ -257,60 +223,51 @@
 
     ];
 
-
     /* ================= TIMER ================= */
 
     let currentTimer = null;
 
     function startCountdown(seconds, display, btn) {
-
       clearInterval(currentTimer);
 
-      document
-        .querySelectorAll(".blink")
-        .forEach(b => b.classList.remove("blink"));
+      document.querySelectorAll(".blink").forEach(b => b.classList.remove("blink"));
 
       btn.classList.add("blink");
+      display.style.color = window.getComputedStyle(btn).backgroundColor;
 
       let t = seconds;
 
-      display.classList.add("run");
       display.textContent = format(t);
 
       currentTimer = setInterval(() => {
-
         t--;
-
         display.textContent = format(t);
+
+        if (t < 0) {
+          display.style.color = "var(--neg)";
+        }
 
       }, 1000);
     }
 
     function format(s) {
-
       const sign = s < 0 ? "-" : "";
-
       s = Math.abs(s);
-
       return sign + "0:" + s.toString().padStart(2, "0");
     }
-
 
     /* ================= RENDER ================= */
 
     const app = document.getElementById("app");
 
     function render() {
-
       exercises.forEach((ex, i) => {
 
         const div = document.createElement("div");
         div.className = "exercise";
 
         let mobilityHTML = "";
-
         if (ex.mobility) {
-
           mobilityHTML = `
         <ul>
           ${ex.list.map(e => `<li>${e}</li>`).join("")}
@@ -319,25 +276,25 @@
         }
 
         let seriesHTML = "";
-
         if (!ex.mobility) {
-
-          for (let s = 1; s <= 3; s++) {
-
-            seriesHTML += `
-          <div class="series-row">
-
-            <button class="start">▶ Série ${s}</button>
-
-            <button class="finish">✔ Descanso</button>
-
-          </div>
-        `;
-          }
+          seriesHTML = `
+        <div class="timer" id="timer${i}">0:00</div>
+        <div class="button-row">
+          <button class="start">▶ Série 1</button>
+          <button class="finish">✔ Descanso</button>
+        </div>
+        <div class="button-row">
+          <button class="start">▶ Série 2</button>
+          <button class="finish">✔ Descanso</button>
+        </div>
+        <div class="button-row">
+          <button class="start">▶ Série 3</button>
+          <button class="finish">✔ Descanso</button>
+        </div>
+      `;
         }
 
         div.innerHTML = `
-
       <div class="title">${i + 1}. ${ex.name}</div>
 
       <div class="row">
@@ -351,19 +308,7 @@
       <div class="obs" contenteditable>Observações...</div>
 
       ${mobilityHTML}
-
-      ${!ex.mobility ? `
-      <div class="grid">
-
-        <div class="series">
-          ${seriesHTML}
-        </div>
-
-        <div class="timer">0:00</div>
-
-      </div>
-      ` : ""}
-
+      ${!ex.mobility ? `<div class="grid">${seriesHTML}</div>` : ""}
     `;
 
         app.appendChild(div);
@@ -371,52 +316,42 @@
 
     }
 
+    /* ================= BIND BUTTONS ================= */
 
-    /* ================= LIGA BOTÕES ================= */
-
-    function bind() {
-
+    function bindButtons() {
       document.querySelectorAll(".exercise").forEach((box, i) => {
 
         if (exercises[i].mobility) return;
 
         const timer = box.querySelector(".timer");
 
-        box.querySelectorAll(".start").forEach(btn => {
+        const starts = box.querySelectorAll(".start");
+        const finishes = box.querySelectorAll(".finish");
 
+        starts.forEach((btn, idx) => {
           btn.addEventListener("click", () => {
-
             startCountdown(exercises[i].time, timer, btn);
-
           });
-
         });
 
-        box.querySelectorAll(".finish").forEach(btn => {
-
+        finishes.forEach((btn, idx) => {
           btn.addEventListener("click", () => {
-
             startCountdown(exercises[i].rest, timer, btn);
 
-            const start = btn.previousElementSibling;
-
-            start.className = "done";
-            start.textContent = "Feito";
-            start.disabled = true;
-
+            const startBtn = starts[idx];
+            startBtn.disabled = true;
+            startBtn.classList.add("done");
+            startBtn.textContent = "Feito";
           });
-
         });
 
       });
-
     }
-
 
     /* ================= INIT ================= */
 
     render();
-    bind();
+    bindButtons();
 
   </script>
 
