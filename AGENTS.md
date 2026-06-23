@@ -329,29 +329,52 @@ Chamada no INIT após `renderWorkout()` e `bindButtons()`.
 
 ## **Histórico**
 
-Implementação planejada — ver [PLAN.md](PLAN.md).
+Implementado via `treino_log` no `localStorage`. Registrado automaticamente ao concluir todas as séries de um treino.
 
 Registrar:
 
-- data
-- tipo do treino (A/B)
-- timestamp de conclusão
+- data (`date`)
+- tipo do treino (`type`: A/B)
+- timestamp de conclusão (`completedAt`)
 
-Persistência local via `localStorage` (chave `treino_log`).
+Estrutura: `{ date, type, completedAt }` em array JSON.
+
+---
+
+## **Alternância Inteligente**
+
+Ao carregar o app, o último treino do `treino_log` é lido. O treino sugerido é o oposto do último (se fez A, sugere B; se fez B, sugere A). Se não há histórico, usa A como padrão.
+
+---
+
+## **Dashboard**
+
+Aba "Dashboard" na barra de navegação, ao lado de Treino A / Treino B.
+
+### **Cartões**
+
+| Cartão | Descrição |
+|--------|-----------|
+| Último treino | Tipo + data formatada |
+| Total de treinos | Contagem total de sessões |
+| Sequência atual | Dias consecutivos (streak) |
+| Distribuição A/B | Quantos treinos de cada tipo |
+| Últimos 7 dias | Bolinhas ✔ (treinou) / ✗ (não treinou) |
+
+### **Funções**
+
+- `showDashboard()` — ativa a tela e chama `renderDashboard()`
+- `renderDashboard()` — lê `treino_log`, calcula métricas e preenche o container
 
 ---
 
 ## **Exportação**
 
-Formato preferido:
+Implementado via botão "📥 Exportar histórico (CSV)" no Dashboard. Gera download CSV com colunas `date,type,completedAt`.
 
-- CSV
-
-Formato secundário:
+Formato futuro:
 
 - JSON
-
-Não gerar formatos proprietários.
 
 ---
 

@@ -117,25 +117,25 @@ Baseado no `treino_log`: se o último foi A, sugere B, e vice-versa. Elimina a d
 
 ## 5. Etapas de Implementação
 
-### Etapa 1 — Registro de conclusão
+### ✅ Etapa 1 — Registro de conclusão (implementado)
 - Detectar quando todas as séries de todos os exercícios estão Feito
 - Salvar `treino_log` no `localStorage`
-- Banner de conclusão
+- Banner de conclusão com auto-dismiss (4 s)
 - Ignorar mobilidade na contagem
 
-### Etapa 2 — Alternância inteligente
+### ✅ Etapa 2 — Alternância inteligente (implementado)
 - Ao carregar, verificar último treino no log
 - Sugerir o outro automaticamente
 - Padrão: A se não houver histórico
 
-### Etapa 3 — Dashboard
-- Container `.screen-dashboard` (show/hide)
-- Cartões: último treino, total, sequência, distribuição, últimos 7 dias
-- Navegação via abas
-- Ler `treino_log` e calcular métricas
+### ✅ Etapa 3 — Dashboard (implementado)
+- Container `#screen-dashboard` (show/hide via classe `.screen`)
+- Aba "Dashboard" na barra de navegação
+- Cartões: último treino, total, streak, distribuição A/B, últimos 7 dias
+- Botão "Exportar histórico (CSV)"
 
-### Etapa 4 — Exportação
-- Botão "Exportar histórico" → download CSV ou JSON
+### ✅ Etapa 4 — Exportação (implementado)
+- Botão no Dashboard → download CSV via Blob
 
 ---
 

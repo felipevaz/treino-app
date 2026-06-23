@@ -169,6 +169,161 @@
       margin-bottom: 8px;
       color: var(--muted);
     }
+
+    /* ===== SCREENS ===== */
+
+    .screen {
+      display: none;
+    }
+
+    .screen.visible {
+      display: block;
+    }
+
+    /* ===== BANNER ===== */
+
+    .banner {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      left: 14px;
+      right: 14px;
+      background: #22c55e;
+      color: black;
+      font-weight: 700;
+      font-size: 1.1em;
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      z-index: 10;
+    }
+
+    .banner.show {
+      display: block;
+    }
+
+    .banner .btn-dash {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 8px 20px;
+      border-radius: 8px;
+      border: none;
+      background: black;
+      color: #22c55e;
+      font-weight: 700;
+      font-size: 0.9em;
+      cursor: pointer;
+    }
+
+    /* ===== DASHBOARD ===== */
+
+    .dash-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .dash-card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .dash-card-title {
+      font-size: 0.85em;
+      color: var(--muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .dash-card-value {
+      font-size: 2em;
+      font-weight: 700;
+    }
+
+    .dash-card-sub {
+      font-size: 1em;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .dash-week {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .dash-day {
+      flex: 1;
+      text-align: center;
+    }
+
+    .dash-day-label {
+      font-size: 0.7em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .dash-day-dot {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      line-height: 28px;
+      font-size: 0.9em;
+    }
+
+    .dash-day-dot.on {
+      background: #22c55e;
+      color: black;
+    }
+
+    .dash-day-dot.off {
+      background: #1e293b;
+      color: var(--muted);
+    }
+
+    .dash-dist {
+      display: flex;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .dash-dist-item {
+      flex: 1;
+      text-align: center;
+      background: #020617;
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    .dash-dist-count {
+      font-size: 1.6em;
+      font-weight: 700;
+    }
+
+    .dash-dist-label {
+      font-size: 0.8em;
+      color: var(--muted);
+    }
+
+    .btn-export {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: var(--tab);
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 1em;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    .btn-export:hover {
+      background: #334155;
+      color: var(--text);
+    }
   </style>
 
 </head>
@@ -178,11 +333,16 @@
   <h1>Treino</h1>
 
   <div class="tab-bar">
-    <button class="tab-btn" data-workout="A">Treino A</button>
-    <button class="tab-btn" data-workout="B">Treino B</button>
+    <button class="tab-btn" data-screen="workout" data-workout="A">Treino A</button>
+    <button class="tab-btn" data-screen="workout" data-workout="B">Treino B</button>
+    <button class="tab-btn" data-screen="dashboard">Dashboard</button>
   </div>
 
   <div id="app"></div>
+
+  <div id="screen-dashboard" class="screen"></div>
+
+  <div id="banner" class="banner"></div>
 
   <script>
 
@@ -409,6 +569,14 @@
             startBtn.disabled = true;
             startBtn.classList.add("done");
             startBtn.textContent = "Feito";
+
+            // Check if all series are done
+            const allStarts = container.querySelectorAll(".start");
+            const allDone = Array.from(allStarts).every(b => b.disabled);
+            if (allDone) {
+              logWorkout(key);
+              showBanner(key);
+            }
           });
         });
 
@@ -453,12 +621,44 @@
       });
     }
 
-    /* ================= SWITCH WORKOUT ================= */
+    /* ================= LOG ================= */
+
+    function logWorkout(key) {
+      const log = JSON.parse(localStorage.getItem("treino_log") || "[]");
+      const today = new Date().toISOString().slice(0, 10);
+      const entry = { date: today, type: key, completedAt: new Date().toISOString() };
+
+      // Overwrite if same date exists
+      const idx = log.findIndex(e => e.date === today);
+      if (idx >= 0) log[idx] = entry;
+      else log.push(entry);
+
+      localStorage.setItem("treino_log", JSON.stringify(log));
+    }
+
+    /* ================= BANNER ================= */
+
+    function showBanner(key) {
+      const banner = document.getElementById("banner");
+      banner.innerHTML = "Treino " + key + " concluído! 🎉" +
+        '<br><button class="btn-dash" onclick="showDashboard()">Ver Dashboard</button>';
+      banner.classList.add("show");
+
+      setTimeout(() => {
+        banner.classList.remove("show");
+      }, 4000);
+    }
+
+    /* ================= SCREENS ================= */
 
     function switchWorkout(key) {
       // Update tab buttons
       document.querySelectorAll(".tab-btn").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.workout === key);
+        if (btn.dataset.screen === "dashboard") {
+          btn.classList.remove("active");
+        } else {
+          btn.classList.toggle("active", btn.dataset.workout === key);
+        }
       });
 
       // Show/hide workout containers
@@ -466,8 +666,147 @@
         container.classList.toggle("visible", container.id === "workout" + key);
       });
 
+      // Hide dashboard
+      document.getElementById("screen-dashboard").classList.remove("visible");
+
       // Remember preference
       localStorage.setItem("treino_selected", key);
+    }
+
+    function showDashboard() {
+      // Update tab buttons
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.screen === "dashboard");
+      });
+
+      // Hide all workouts
+      document.querySelectorAll(".workout").forEach(c => c.classList.remove("visible"));
+
+      // Show and render dashboard
+      const dash = document.getElementById("screen-dashboard");
+      dash.classList.add("visible");
+      renderDashboard();
+    }
+
+    /* ================= DASHBOARD ================= */
+
+    function renderDashboard() {
+      const log = JSON.parse(localStorage.getItem("treino_log") || "[]");
+
+      // Last workout
+      let lastText = "Nenhum";
+      if (log.length > 0) {
+        const last = log[log.length - 1];
+        const d = new Date(last.completedAt);
+        const dateStr = d.toLocaleDateString("pt-BR");
+        lastText = "Treino " + last.type + " — " + dateStr;
+      }
+
+      // Total
+      const total = log.length;
+
+      // Streak
+      let streak = 0;
+      if (log.length > 0) {
+        const today = new Date().toISOString().slice(0, 10);
+        const sorted = log.slice().sort((a, b) => b.date.localeCompare(a.date));
+        const lastDate = sorted[0].date;
+
+        // Check if last workout was today or yesterday
+        const todayDate = new Date();
+        const lastDt = new Date(lastDate + "T12:00:00");
+        const diffDays = Math.round((todayDate - lastDt) / 86400000);
+
+        if (diffDays <= 1) {
+          streak = 1;
+          for (let i = 1; i < sorted.length; i++) {
+            const prev = new Date(sorted[i - 1].date + "T12:00:00");
+            const curr = new Date(sorted[i].date + "T12:00:00");
+            const gap = Math.round((prev - curr) / 86400000);
+            if (gap === 1) streak++;
+            else break;
+          }
+        }
+      }
+
+      // Distribution
+      const distA = log.filter(e => e.type === "A").length;
+      const distB = log.filter(e => e.type === "B").length;
+
+      // Last 7 days
+      const weekDays = [];
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const dateStr = d.toISOString().slice(0, 10);
+        const dayLabel = d.toLocaleDateString("pt-BR", { weekday: "short" }).slice(0, 3);
+        const trained = log.some(e => e.date === dateStr);
+        weekDays.push({ label: dayLabel, on: trained });
+      }
+
+      // Build HTML
+      const weekHTML = weekDays.map(d =>
+        '<div class="dash-day">' +
+          '<div class="dash-day-label">' + d.label + '</div>' +
+          '<div class="dash-day-dot ' + (d.on ? "on" : "off") + '">' + (d.on ? "✔" : "✗") + '</div>' +
+        '</div>'
+      ).join("");
+
+      document.getElementById("screen-dashboard").innerHTML =
+        '<div class="dash-grid">' +
+
+          '<div class="dash-card">' +
+            '<div class="dash-card-title">Último treino</div>' +
+            '<div class="dash-card-value">' + lastText + '</div>' +
+          '</div>' +
+
+          '<div class="dash-card">' +
+            '<div class="dash-card-title">Total de treinos</div>' +
+            '<div class="dash-card-value">' + total + '</div>' +
+          '</div>' +
+
+          '<div class="dash-card">' +
+            '<div class="dash-card-title">Sequência atual</div>' +
+            '<div class="dash-card-value">' + streak + '</div>' +
+            '<div class="dash-card-sub">' + (streak === 1 ? "dia" : "dias") + ' seguidos</div>' +
+          '</div>' +
+
+          '<div class="dash-card">' +
+            '<div class="dash-card-title">Distribuição</div>' +
+            '<div class="dash-dist">' +
+              '<div class="dash-dist-item"><div class="dash-dist-count">' + distA + '</div><div class="dash-dist-label">Treino A</div></div>' +
+              '<div class="dash-dist-item"><div class="dash-dist-count">' + distB + '</div><div class="dash-dist-label">Treino B</div></div>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="dash-card">' +
+            '<div class="dash-card-title">Últimos 7 dias</div>' +
+            '<div class="dash-week">' + weekHTML + '</div>' +
+          '</div>' +
+
+          '<button class="btn-export" onclick="exportHistory()">📥 Exportar histórico (CSV)</button>' +
+
+        '</div>';
+    }
+
+    /* ================= EXPORT ================= */
+
+    function exportHistory() {
+      const log = JSON.parse(localStorage.getItem("treino_log") || "[]");
+      if (log.length === 0) return;
+
+      const csv = "date,type,completedAt\n" +
+        log.map(e => e.date + "," + e.type + "," + e.completedAt).join("\n");
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "treino_log.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
 
     /* ================= INIT ================= */
@@ -487,13 +826,22 @@
     // Tab click handlers
     document.querySelectorAll(".tab-btn").forEach(btn => {
       btn.addEventListener("click", () => {
-        switchWorkout(btn.dataset.workout);
+        if (btn.dataset.screen === "dashboard") {
+          showDashboard();
+        } else {
+          switchWorkout(btn.dataset.workout);
+        }
       });
     });
 
-    // Restore last selected workout (default A)
-    const savedWorkout = localStorage.getItem("treino_selected") || "A";
-    switchWorkout(savedWorkout);
+    // Smart alternation: suggest opposite of last completed workout
+    const logData = JSON.parse(localStorage.getItem("treino_log") || "[]");
+    let suggested = "A";
+    if (logData.length > 0) {
+      const lastEntry = logData[logData.length - 1];
+      suggested = lastEntry.type === "A" ? "B" : "A";
+    }
+    switchWorkout(suggested);
 
   </script>
 
