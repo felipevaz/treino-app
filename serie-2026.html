@@ -17,6 +17,8 @@
       --text: #e5e7eb;
       --muted: #64748b;
       --neg: #ef4444;
+      --tab: #1e293b;
+      --tab-active: #22c55e;
     }
 
     body {
@@ -30,8 +32,46 @@
       text-align: center;
       font-size: 2.4em;
       font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    /* ===== TABS ===== */
+
+    .tab-bar {
+      display: flex;
+      gap: 10px;
       margin-bottom: 20px;
     }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 700;
+      font-size: 1.1em;
+      background: var(--tab);
+      color: var(--muted);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .tab-btn.active {
+      background: var(--tab-active);
+      color: black;
+    }
+
+    /* ===== WORKOUT CONTAINERS ===== */
+
+    .workout {
+      display: none;
+    }
+
+    .workout.visible {
+      display: block;
+    }
+
+    /* ===== EXERCISES ===== */
 
     .exercise {
       background: var(--card);
@@ -106,22 +146,20 @@
       background: #38bdf8;
     }
 
+    .done {
+      opacity: 0.4;
+      background: #64748b;
+      cursor: default;
+    }
+
     .blink {
       animation: pulse 1s infinite;
     }
 
     @keyframes pulse {
-      0% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0.4;
-      }
-
-      100% {
-        opacity: 1;
-      }
+      0% { opacity: 1; }
+      50% { opacity: 0.4; }
+      100% { opacity: 1; }
     }
 
     .timer {
@@ -139,89 +177,109 @@
 
   <h1>Treino</h1>
 
+  <div class="tab-bar">
+    <button class="tab-btn" data-workout="A">Treino A</button>
+    <button class="tab-btn" data-workout="B">Treino B</button>
+  </div>
+
   <div id="app"></div>
 
   <script>
 
     /* ================= DADOS ================= */
 
-    const exercises = [
+    const workouts = {
+      A: [
+        {
+          name: "Mobilidade",
+          reps: "Sequência",
+          load: "0 kg",
+          mobility: true,
+          list: [
+            "Floppy arm – 10",
+            "Cat/cow – 10",
+            "Best stretch – 10"
+          ]
+        },
+        {
+          name: "Pallof Press",
+          reps: "10–12 / lado",
+          load: "elástico",
+          time: 40,
+          rest: 30
+        },
+        {
+          name: "Agachamento unilateral",
+          reps: "12",
+          load: "5 kg",
+          time: 40,
+          rest: 30
+        },
+        {
+          name: "Flexão de braço",
+          reps: "8–12",
+          load: "peso corporal",
+          time: 40,
+          rest: 30
+        },
+        {
+          name: "Rotação externa do antebraço",
+          reps: "10",
+          load: "4 kg",
+          time: 40,
+          rest: 30
+        },
+        {
+          name: "Sleeper Stretch",
+          reps: "1",
+          load: "0 kg",
+          mobility: true,
+          list: []
+        }
+      ],
 
-      {
-        name: "Mobilidade",
-        reps: "Sequência",
-        load: "0 kg",
-        mobility: true,
-        list: [
-          "Floppy arm – 10",
-          "Cat/cow – 10",
-          "Forward roll – 10",
-          "Best stretch – 10",
-          "Saudação – 3"
-        ]
-      },
-
-      {
-        name: "Prancha",
-        reps: "30 s",
-        load: "0 kg",
-        time: 30,
-        rest: 30
-      },
-      {
-        name: "Avião / Remada",
-        reps: "10 / 10–12",
-        load: "0 kg / elástico",
-        time: 40,
-        rest: 30
-      },
-      {
-        name: "Pallof",
-        reps: "10–12 / lado",
-        load: "elástico",
-        time: 40,
-        rest: 30
-      },
-      {
-        name: "Barra fixa",
-        reps: "6–8 / 10–12",
-        load: "peso corporal",
-        time: 40,
-        rest: 0
-      },
-      {
-        name: "Agachamento",
-        reps: "12",
-        load: "5 kg",
-        time: 40,
-        rest: 30
-      },
-      {
-        name: "Terra KB",
-        reps: "12",
-        load: "15 kg",
-        time: 40,
-        rest: 30
-      },
-      {
-        name: "Flexão",
-        reps: "8–12",
-        load: "peso corporal",
-        time: 40,
-        rest: 30
-      },
-      {
-        name: "Final – Ombro",
-        reps: "Rotação ext. 10 / Sleeper 1",
-        load: "4 kg / sem peso",
-        mobility: true,
-        list: [
-          "Rotação externa do antebraço – 10 (4 kg)",
-          "Sleepers stretch – 1 (sem peso)"
-        ]
-      }
-
-    ];
+      B: [
+        {
+          name: "Mobilidade",
+          reps: "Sequência",
+          load: "0 kg",
+          mobility: true,
+          list: [
+            "Floppy arm – 10",
+            "Cat/cow – 10",
+            "Best stretch – 10"
+          ]
+        },
+        {
+          name: "Barra fixa",
+          reps: "4 / 3 / 2",
+          load: "peso corporal",
+          time: 40,
+          rest: 30
+        },
+        {
+          name: "Remada",
+          reps: "10–12",
+          load: "kettlebell 12 kg",
+          time: 40,
+          rest: 30
+        },
+        {
+          name: "Levantamento terra KB",
+          reps: "12",
+          load: "15 kg",
+          time: 40,
+          rest: 30
+        },
+        {
+          name: "Hanging Knee Raise",
+          reps: "8–12",
+          load: "peso corporal",
+          time: 40,
+          rest: 30
+        }
+      ]
+    };
 
     /* ================= TIMER ================= */
 
@@ -260,8 +318,13 @@
 
     const app = document.getElementById("app");
 
-    function render() {
-      exercises.forEach((ex, i) => {
+    function renderWorkout(key) {
+      const list = workouts[key];
+      const container = document.createElement("div");
+      container.className = "workout";
+      container.id = "workout" + key;
+
+      list.forEach((ex, i) => {
 
         const div = document.createElement("div");
         div.className = "exercise";
@@ -278,7 +341,7 @@
         let seriesHTML = "";
         if (!ex.mobility) {
           seriesHTML = `
-        <div class="timer" id="timer${i}">0:00</div>
+        <div class="timer" id="timer${key}${i}">0:00</div>
         <div class="button-row">
           <button class="start">▶ Série 1</button>
           <button class="finish">✔ Descanso</button>
@@ -311,17 +374,21 @@
       ${!ex.mobility ? `<div class="grid">${seriesHTML}</div>` : ""}
     `;
 
-        app.appendChild(div);
+        container.appendChild(div);
       });
 
+      app.appendChild(container);
     }
 
     /* ================= BIND BUTTONS ================= */
 
-    function bindButtons() {
-      document.querySelectorAll(".exercise").forEach((box, i) => {
+    function bindButtons(key) {
+      const container = document.getElementById("workout" + key);
+      const list = workouts[key];
 
-        if (exercises[i].mobility) return;
+      container.querySelectorAll(".exercise").forEach((box, i) => {
+
+        if (list[i].mobility) return;
 
         const timer = box.querySelector(".timer");
 
@@ -330,13 +397,13 @@
 
         starts.forEach((btn, idx) => {
           btn.addEventListener("click", () => {
-            startCountdown(exercises[i].time, timer, btn);
+            startCountdown(list[i].time, timer, btn);
           });
         });
 
         finishes.forEach((btn, idx) => {
           btn.addEventListener("click", () => {
-            startCountdown(exercises[i].rest, timer, btn);
+            startCountdown(list[i].rest, timer, btn);
 
             const startBtn = starts[idx];
             startBtn.disabled = true;
@@ -348,10 +415,85 @@
       });
     }
 
+    /* ================= PERSISTENCE ================= */
+
+    function setupPersistence(key) {
+      const container = document.getElementById("workout" + key);
+      const list = workouts[key];
+
+      container.querySelectorAll(".exercise").forEach((box, i) => {
+
+        const spans = box.querySelectorAll("span[contenteditable]");
+        const repsEl = spans[0];
+        const loadEl = spans[1];
+        const obsEl = box.querySelector(".obs[contenteditable]");
+
+        if (!repsEl || !loadEl || !obsEl) return;
+
+        const prefix = "treino" + key + "_";
+
+        // Restore saved values
+        const savedReps = localStorage.getItem(prefix + "reps_" + i);
+        const savedLoad = localStorage.getItem(prefix + "load_" + i);
+        const savedObs = localStorage.getItem(prefix + "obs_" + i);
+        if (savedReps !== null) repsEl.textContent = savedReps;
+        if (savedLoad !== null) loadEl.textContent = savedLoad;
+        if (savedObs !== null) obsEl.textContent = savedObs;
+
+        // Save on input
+        repsEl.addEventListener("input", () => {
+          localStorage.setItem(prefix + "reps_" + i, repsEl.textContent);
+        });
+        loadEl.addEventListener("input", () => {
+          localStorage.setItem(prefix + "load_" + i, loadEl.textContent);
+        });
+        obsEl.addEventListener("input", () => {
+          localStorage.setItem(prefix + "obs_" + i, obsEl.textContent);
+        });
+      });
+    }
+
+    /* ================= SWITCH WORKOUT ================= */
+
+    function switchWorkout(key) {
+      // Update tab buttons
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.workout === key);
+      });
+
+      // Show/hide workout containers
+      document.querySelectorAll(".workout").forEach(container => {
+        container.classList.toggle("visible", container.id === "workout" + key);
+      });
+
+      // Remember preference
+      localStorage.setItem("treino_selected", key);
+    }
+
     /* ================= INIT ================= */
 
-    render();
-    bindButtons();
+    // Render both workouts
+    renderWorkout("A");
+    renderWorkout("B");
+
+    // Bind buttons for both
+    bindButtons("A");
+    bindButtons("B");
+
+    // Setup persistence for both
+    setupPersistence("A");
+    setupPersistence("B");
+
+    // Tab click handlers
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        switchWorkout(btn.dataset.workout);
+      });
+    });
+
+    // Restore last selected workout (default A)
+    const savedWorkout = localStorage.getItem("treino_selected") || "A";
+    switchWorkout(savedWorkout);
 
   </script>
 
