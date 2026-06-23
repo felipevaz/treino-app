@@ -12,13 +12,15 @@
 
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #020617;
+      --bg: #0b1120;
+      --card: #0f1a2e;
       --text: #e5e7eb;
-      --muted: #64748b;
+      --muted: #94a3b8;
       --neg: #ef4444;
       --tab: #1e293b;
       --tab-active: #22c55e;
+      --accent: #f59e0b;
+      --border: #1e293b;
     }
 
     body {
@@ -26,34 +28,41 @@
       background: var(--bg);
       color: var(--text);
       padding: 14px;
+      margin: 0;
     }
 
     h1 {
       text-align: center;
-      font-size: 2.4em;
+      font-size: 1.8em;
       font-weight: 700;
-      margin-bottom: 16px;
+      margin: 8px 0 12px 0;
+      letter-spacing: 0.02em;
     }
 
     /* ===== TABS ===== */
 
     .tab-bar {
       display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
+      gap: 8px;
+      margin-bottom: 16px;
     }
 
     .tab-btn {
       flex: 1;
-      padding: 12px;
+      padding: 10px 8px;
       border-radius: 10px;
       border: none;
       font-weight: 700;
-      font-size: 1.1em;
+      font-size: 1em;
       background: var(--tab);
       color: var(--muted);
       cursor: pointer;
-      transition: background 0.15s, color 0.15s;
+      transition: background 0.15s, color 0.15s, transform 0.12s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .tab-btn:active {
+      transform: scale(0.96);
     }
 
     .tab-btn.active {
@@ -75,67 +84,126 @@
 
     .exercise {
       background: var(--card);
-      border-radius: 12px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
       padding: 16px;
-      margin-bottom: 18px;
+      margin-bottom: 14px;
     }
 
     .title {
-      font-size: 1.4em;
+      font-size: 1.3em;
       font-weight: 700;
       margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .title-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #22c55e;
+      color: black;
+      font-size: 0.75em;
+      font-weight: 700;
+      flex-shrink: 0;
     }
 
     .row {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
       margin-bottom: 8px;
     }
 
     .row span {
       background: #020617;
-      padding: 4px 8px;
+      padding: 4px 10px;
       border-radius: 6px;
-      font-size: 0.95em;
+      font-size: 0.9em;
     }
 
     .row span[contenteditable] {
-      border-bottom: 1px dashed var(--text);
+      border-bottom: 1px dashed var(--muted);
+      min-width: 50px;
     }
 
     .obs {
       background: #020617;
-      padding: 6px;
-      border-radius: 6px;
-      font-size: 0.9em;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 0.85em;
       margin-bottom: 10px;
+      color: var(--muted);
     }
 
     .obs[contenteditable] {
-      border: 1px dashed var(--text);
+      border: 1px dashed var(--border);
     }
+
+    .obs[contenteditable]:focus {
+      color: var(--text);
+      border-color: var(--muted);
+    }
+
+    /* ===== MOBILITY LIST ===== */
+
+    .mobility-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .mobility-list li {
+      background: #020617;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.9em;
+    }
+
+    .mobility-list li::before {
+      content: "○ ";
+      color: var(--muted);
+    }
+
+    /* ===== SERIES GRID ===== */
 
     .grid {
       display: grid;
       grid-template-rows: auto repeat(3, auto);
-      gap: 10px;
+      gap: 8px;
     }
 
     .button-row {
       display: flex;
-      gap: 10px;
+      gap: 8px;
     }
+
+    /* ===== BUTTONS ===== */
 
     button {
       flex: 1;
-      padding: 8px;
-      border-radius: 8px;
+      padding: 10px;
+      border-radius: 10px;
       border: none;
       font-weight: 600;
-      font-size: 0.95em;
+      font-size: 0.9em;
       color: black;
       min-width: 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+
+    button:active {
+      transform: scale(0.96);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.25);
     }
 
     .start {
@@ -150,6 +218,12 @@
       opacity: 0.4;
       background: #64748b;
       cursor: default;
+      box-shadow: none;
+    }
+
+    .done:active {
+      transform: none;
+      box-shadow: none;
     }
 
     .blink {
@@ -162,11 +236,17 @@
       100% { opacity: 1; }
     }
 
+    /* ===== TIMER ===== */
+
     .timer {
-      font-size: 2.6em;
+      font-size: 3em;
       font-weight: 700;
       text-align: center;
-      margin-bottom: 8px;
+      padding: 12px 0;
+      margin-bottom: 10px;
+      background: #020617;
+      border-radius: 12px;
+      letter-spacing: 0.05em;
       color: var(--muted);
     }
 
@@ -199,9 +279,10 @@
       font-weight: 700;
       font-size: 1.1em;
       padding: 16px;
-      border-radius: 12px;
+      border-radius: 14px;
       text-align: center;
       z-index: 10;
+      box-shadow: 0 4px 20px rgba(34,197,94,0.3);
     }
 
     .banner.show {
@@ -231,36 +312,17 @@
 
     .dash-card {
       background: var(--card);
-      border-radius: 12px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
       padding: 16px;
     }
 
-    /* ===== FINISH BUTTON ===== */
-
-    .finish-workout {
-      width: 100%;
-      padding: 14px;
-      border-radius: 10px;
-      border: none;
-      background: #22c55e;
-      color: black;
-      font-weight: 700;
-      font-size: 1.1em;
-      cursor: pointer;
-      margin-top: 4px;
-      transition: transform 0.15s;
-    }
-
-    .finish-workout:active {
-      transform: scale(0.97);
-    }
-
     .dash-card-title {
-      font-size: 0.85em;
+      font-size: 0.8em;
       color: var(--muted);
       margin-bottom: 4px;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
     }
 
     .dash-card-value {
@@ -269,7 +331,7 @@
     }
 
     .dash-card-sub {
-      font-size: 1em;
+      font-size: 0.9em;
       color: var(--muted);
       margin-top: 2px;
     }
@@ -286,18 +348,21 @@
     }
 
     .dash-day-label {
-      font-size: 0.7em;
+      font-size: 0.65em;
       color: var(--muted);
       margin-bottom: 4px;
+      text-transform: uppercase;
     }
 
     .dash-day-dot {
-      display: inline-block;
-      width: 28px;
-      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
-      line-height: 28px;
-      font-size: 0.9em;
+      font-size: 0.85em;
+      transition: background 0.2s;
     }
 
     .dash-day-dot.on {
@@ -310,45 +375,87 @@
       color: var(--muted);
     }
 
+    /* ===== DISTRIBUTION BAR ===== */
+
     .dash-dist {
       display: flex;
-      gap: 12px;
-      margin-top: 6px;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 8px;
     }
 
-    .dash-dist-item {
-      flex: 1;
-      text-align: center;
-      background: #020617;
-      border-radius: 8px;
-      padding: 8px;
+    .dash-dist-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9em;
     }
 
-    .dash-dist-count {
-      font-size: 1.6em;
+    .dash-dist-row span:last-child {
       font-weight: 700;
     }
 
-    .dash-dist-label {
-      font-size: 0.8em;
-      color: var(--muted);
+    .dash-bar {
+      display: flex;
+      height: 10px;
+      border-radius: 5px;
+      overflow: hidden;
+      background: #1e293b;
+      margin-top: 4px;
     }
+
+    .dash-bar-a {
+      background: #22c55e;
+      transition: width 0.4s ease;
+    }
+
+    .dash-bar-b {
+      background: #38bdf8;
+      transition: width 0.4s ease;
+    }
+
+    /* ===== FINISH BUTTON ===== */
+
+    .finish-workout {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: #22c55e;
+      color: black;
+      font-weight: 700;
+      font-size: 1.1em;
+      cursor: pointer;
+      margin-top: 6px;
+      box-shadow: 0 2px 8px rgba(34,197,94,0.3);
+    }
+
+    .finish-workout:active {
+      transform: scale(0.97);
+    }
+
+    /* ===== EXPORT BUTTON ===== */
 
     .btn-export {
       width: 100%;
       padding: 12px;
-      border-radius: 10px;
-      border: none;
-      background: var(--tab);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: transparent;
       color: var(--muted);
       font-weight: 600;
-      font-size: 1em;
+      font-size: 0.95em;
       cursor: pointer;
       margin-top: 4px;
+      transition: background 0.15s, color 0.15s;
+      box-shadow: none;
+    }
+
+    .btn-export:active {
+      transform: scale(0.97);
     }
 
     .btn-export:hover {
-      background: #334155;
+      background: var(--tab);
       color: var(--text);
     }
   </style>
@@ -357,7 +464,7 @@
 
 <body>
 
-  <h1>Treino</h1>
+  <h1>🏋️ Treino</h1>
 
   <div class="tab-bar">
     <button class="tab-btn" data-screen="workout" data-workout="A">Treino A</button>
@@ -515,11 +622,12 @@
 
         const div = document.createElement("div");
         div.className = "exercise";
+        const num = i + 1;
 
         let mobilityHTML = "";
         if (ex.mobility) {
           mobilityHTML = `
-        <ul>
+        <ul class="mobility-list">
           ${ex.list.map(e => `<li>${e}</li>`).join("")}
         </ul>
       `;
@@ -545,7 +653,10 @@
         }
 
         div.innerHTML = `
-      <div class="title">${i + 1}. ${ex.name}</div>
+      <div class="title">
+        <span class="title-badge">${num}</span>
+        ${ex.name}
+      </div>
 
       <div class="row">
         <span>Reps:</span>
@@ -555,7 +666,7 @@
         <span contenteditable>${ex.load}</span>
       </div>
 
-      <div class="obs" contenteditable>Observações...</div>
+      <div class="obs" contenteditable>Observações…</div>
 
       ${mobilityHTML}
       ${!ex.mobility ? `<div class="grid">${seriesHTML}</div>` : ""}
@@ -749,11 +860,8 @@
       // Streak
       let streak = 0;
       if (log.length > 0) {
-        const today = new Date().toISOString().slice(0, 10);
         const sorted = log.slice().sort((a, b) => b.date.localeCompare(a.date));
         const lastDate = sorted[0].date;
-
-        // Check if last workout was today or yesterday
         const todayDate = new Date();
         const lastDt = new Date(lastDate + "T12:00:00");
         const diffDays = Math.round((todayDate - lastDt) / 86400000);
@@ -773,6 +881,9 @@
       // Distribution
       const distA = log.filter(e => e.type === "A").length;
       const distB = log.filter(e => e.type === "B").length;
+      const distTotal = distA + distB || 1;
+      const pctA = Math.round(distA / distTotal * 100);
+      const pctB = Math.round(distB / distTotal * 100);
 
       // Last 7 days
       const weekDays = [];
@@ -785,7 +896,6 @@
         weekDays.push({ label: dayLabel, on: trained });
       }
 
-      // Build HTML
       const weekHTML = weekDays.map(d =>
         '<div class="dash-day">' +
           '<div class="dash-day-label">' + d.label + '</div>' +
@@ -808,15 +918,19 @@
 
           '<div class="dash-card">' +
             '<div class="dash-card-title">Sequência atual</div>' +
-            '<div class="dash-card-value">' + streak + '</div>' +
+            '<div class="dash-card-value">' + (streak > 0 ? "🔥 " : "") + streak + '</div>' +
             '<div class="dash-card-sub">' + (streak === 1 ? "dia" : "dias") + ' seguidos</div>' +
           '</div>' +
 
           '<div class="dash-card">' +
             '<div class="dash-card-title">Distribuição</div>' +
             '<div class="dash-dist">' +
-              '<div class="dash-dist-item"><div class="dash-dist-count">' + distA + '</div><div class="dash-dist-label">Treino A</div></div>' +
-              '<div class="dash-dist-item"><div class="dash-dist-count">' + distB + '</div><div class="dash-dist-label">Treino B</div></div>' +
+              '<div class="dash-dist-row"><span>Treino A</span><span>' + distA + '</span></div>' +
+              '<div class="dash-dist-row"><span>Treino B</span><span>' + distB + '</span></div>' +
+            '</div>' +
+            '<div class="dash-bar">' +
+              '<div class="dash-bar-a" style="width:' + pctA + '%"></div>' +
+              '<div class="dash-bar-b" style="width:' + pctB + '%"></div>' +
             '</div>' +
           '</div>' +
 

@@ -174,7 +174,7 @@ Inclui:
 
 Cada exercício deve conter:
 
-- nome
+- nome (com badge numerado)
 - reps
 - carga
 - observações
@@ -422,6 +422,34 @@ Antes de modificar o aplicativo:
 Mudanças em timers devem ser tratadas como alterações de alto risco.
 
 ---
+
+## **Design Visual**
+
+### **Paleta**
+
+```css
+--bg: #0b1120;        /* fundo profundo */
+--card: #0f1a2e;      /* cartão azul-escuro sutil */
+--text: #e5e7eb;      /* texto principal */
+--muted: #94a3b8;     /* texto secundário */
+--neg: #ef4444;       /* negativo/erro */
+--tab: #1e293b;       /* aba inativa */
+--tab-active: #22c55e;/* aba ativa / ação */
+--accent: #f59e0b;    /* destaque (streak) */
+--border: #1e293b;    /* borda de cartões */
+```
+
+### **Componentes**
+
+| Componente | Detalhe |
+|------------|---------|
+| Exercise card | `--card` + `1px solid --border` |
+| Badge numerado | Círculo verde `#22c55e` de 28px no título |
+| Mobilidade | Lista com chips `#020617` e bullet `○` |
+| Timer | Fundo `#020617` separado, `font-size: 3em` |
+| Botões | `box-shadow` + `:active` com `scale(0.96)` |
+| Dashboard | Barra de distribuição proporcional verde/azul |
+| Transições | `fadeIn` (opacity + translateY) em telas e banner |
 
 ## **Objetivo de Longo Prazo**
 
