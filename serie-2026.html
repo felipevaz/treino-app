@@ -51,45 +51,64 @@
       height: auto;
     }
 
-    /* ===== TABS ===== */
+    /* ===== WORKOUT HEADER ===== */
 
-    .tab-bar {
+    .workout-header {
       display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
     }
 
-    .tab-btn {
-      flex: 1;
-      padding: 10px 8px;
-      border-radius: 10px;
-      border: none;
+    .workout-header .workout-title {
+      font-size: 1.3em;
       font-weight: 700;
-      font-size: 1em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-home {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
       background: var(--tab);
       color: var(--muted);
+      font-size: 1.1em;
       cursor: pointer;
-      transition: background 0.15s, color 0.15s, transform 0.12s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s, transform 0.12s;
       box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
 
-    .tab-btn:active {
-      transform: scale(0.96);
+    .btn-home:active {
+      transform: scale(0.92);
     }
 
-    .tab-btn.active {
-      background: var(--tab-active);
-      color: black;
+    /* ===== STATION BADGE ===== */
+
+    .station-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #22c55e;
+      color: white;
+      font-weight: 700;
+      font-size: 0.85em;
+      flex-shrink: 0;
     }
 
-    /* ===== WORKOUT CONTAINERS ===== */
-
-    .workout {
-      display: none;
-    }
-
-    .workout.visible {
-      display: block;
+    .station-badge-lg {
+      width: 48px;
+      height: 48px;
+      font-size: 1.2em;
     }
 
     /* ===== EXERCISES ===== */
@@ -162,8 +181,6 @@
       border-color: var(--muted);
     }
 
-    /* ===== MOBILITY LIST ===== */
-
     .mobility-list {
       list-style: none;
       padding: 0;
@@ -184,8 +201,6 @@
       content: "○ ";
       color: var(--muted);
     }
-
-    /* ===== SERIES GRID ===== */
 
     .grid {
       display: grid;
@@ -248,8 +263,6 @@
       50% { opacity: 0.4; }
       100% { opacity: 1; }
     }
-
-    /* ===== TIMER ===== */
 
     .timer {
       font-size: 3em;
@@ -388,8 +401,6 @@
       color: var(--muted);
     }
 
-    /* ===== DISTRIBUTION BAR ===== */
-
     .dash-dist {
       display: flex;
       flex-direction: column;
@@ -426,6 +437,42 @@
       transition: width 0.4s ease;
     }
 
+    /* ===== DASHBOARD WORKOUT SELECTION ===== */
+
+    .dash-workout-grid {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .dash-workout-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.12s;
+    }
+
+    .dash-workout-btn:active {
+      transform: scale(0.98);
+      background: #0a1525;
+    }
+
+    .dash-workout-btn .dash-workout-label {
+      font-size: 1.2em;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .dash-workout-btn .dash-workout-sub {
+      font-size: 0.85em;
+      color: var(--muted);
+    }
+
     /* ===== FINISH BUTTON ===== */
 
     .finish-workout {
@@ -445,8 +492,6 @@
     .finish-workout:active {
       transform: scale(0.97);
     }
-
-    /* ===== EXPORT BUTTON ===== */
 
     .btn-export {
       width: 100%;
@@ -479,12 +524,6 @@
 
   <div id="header" class="header">
     <img src="image.png" alt="Treino" id="logo">
-  </div>
-
-  <div class="tab-bar">
-    <button class="tab-btn" data-screen="workout" data-workout="A">Treino A</button>
-    <button class="tab-btn" data-screen="workout" data-workout="B">Treino B</button>
-    <button class="tab-btn" data-screen="dashboard">Dashboard</button>
   </div>
 
   <div id="app"></div>
@@ -632,6 +671,16 @@
       const container = document.createElement("div");
       container.className = "workout";
       container.id = "workout" + key;
+
+      // Workout header with home button and station badge
+      const header = document.createElement("div");
+      header.className = "workout-header";
+      header.innerHTML =
+        '<button class="btn-home" onclick="showDashboard()">🏠</button>' +
+        '<div class="workout-title">' +
+          '<span class="station-badge">' + key + '</span> Treino ' + key +
+        '</div>';
+      container.appendChild(header);
 
       list.forEach((ex, i) => {
 
@@ -787,7 +836,6 @@
       const today = new Date().toISOString().slice(0, 10);
       const entry = { date: today, type: key, completedAt: new Date().toISOString() };
 
-      // Overwrite if same date exists
       const idx = log.findIndex(e => e.date === today);
       if (idx >= 0) log[idx] = entry;
       else log.push(entry);
@@ -816,48 +864,32 @@
       }, 2000);
     }
 
-    /* ================= SCREENS ================= */
+    /* ================= NAVIGATION ================= */
 
-    function switchWorkout(key) {
-      // Update tab buttons
-      document.querySelectorAll(".tab-btn").forEach(btn => {
-        if (btn.dataset.screen === "dashboard") {
-          btn.classList.remove("active");
-        } else {
-          btn.classList.toggle("active", btn.dataset.workout === key);
-        }
-      });
-
-      // Show/hide workout containers
-      document.querySelectorAll(".workout").forEach(container => {
-        container.classList.toggle("visible", container.id === "workout" + key);
-      });
-
+    function showWorkout(key) {
       // Hide dashboard
       document.getElementById("screen-dashboard").classList.remove("visible");
 
-      // Logo: compact on workout pages
+      // Show selected workout
+      document.querySelectorAll(".workout").forEach(c => c.classList.remove("visible"));
+      document.getElementById("workout" + key).classList.add("visible");
+
+      // Logo compact
       document.getElementById("header").classList.remove("header--dash");
 
-      // Remember preference
       localStorage.setItem("treino_selected", key);
     }
 
     function showDashboard() {
-      // Update tab buttons
-      document.querySelectorAll(".tab-btn").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.screen === "dashboard");
-      });
-
       // Hide all workouts
       document.querySelectorAll(".workout").forEach(c => c.classList.remove("visible"));
 
-      // Logo: expanded on dashboard
+      // Show dashboard
+      document.getElementById("screen-dashboard").classList.add("visible");
+
+      // Logo expanded
       document.getElementById("header").classList.add("header--dash");
 
-      // Show and render dashboard
-      const dash = document.getElementById("screen-dashboard");
-      dash.classList.add("visible");
       renderDashboard();
     }
 
@@ -875,7 +907,6 @@
         lastText = "Treino " + last.type + " — " + dateStr;
       }
 
-      // Total
       const total = log.length;
 
       // Streak
@@ -899,7 +930,6 @@
         }
       }
 
-      // Distribution
       const distA = log.filter(e => e.type === "A").length;
       const distB = log.filter(e => e.type === "B").length;
       const distTotal = distA + distB || 1;
@@ -925,6 +955,25 @@
       ).join("");
 
       document.getElementById("screen-dashboard").innerHTML =
+
+        // Workout selection buttons with station badges
+        '<div class="dash-workout-grid">' +
+          '<div class="dash-workout-btn" onclick="showWorkout(\'A\')">' +
+            '<span class="station-badge station-badge-lg">A</span>' +
+            '<div>' +
+              '<div class="dash-workout-label">Treino A</div>' +
+              '<div class="dash-workout-sub">' + distA + ' treinos realizados</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="dash-workout-btn" onclick="showWorkout(\'B\')">' +
+            '<span class="station-badge station-badge-lg">B</span>' +
+            '<div>' +
+              '<div class="dash-workout-label">Treino B</div>' +
+              '<div class="dash-workout-sub">' + distB + ' treinos realizados</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
         '<div class="dash-grid">' +
 
           '<div class="dash-card">' +
@@ -987,30 +1036,16 @@
 
     /* ================= INIT ================= */
 
-    // Render both workouts
     renderWorkout("A");
     renderWorkout("B");
 
-    // Bind buttons for both
     bindButtons("A");
     bindButtons("B");
 
-    // Setup persistence for both
     setupPersistence("A");
     setupPersistence("B");
 
-    // Tab click handlers
-    document.querySelectorAll(".tab-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        if (btn.dataset.screen === "dashboard") {
-          showDashboard();
-        } else {
-          switchWorkout(btn.dataset.workout);
-        }
-      });
-    });
-
-    // Open on Dashboard by default
+    // Start on Dashboard
     showDashboard();
 
   </script>
