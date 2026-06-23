@@ -93,25 +93,20 @@ Dashboard lê do `treino_log` sempre que a tela é exibida. Não precisa de atua
 
 ```
 1. Abre o app
-   ├→ Tela Treino com última aba usada
-   └→ Aba "Dashboard" disponível no topo
+   ├→ Tela Dashboard (sempre)
+   └→ Abas: "Treino A" | "Treino B" | "Dashboard"
 
 2. Treinar:
-   a. Verifica o treino do dia (A ou B)
+   a. Clica em "Treino A" ou "Treino B"
    b. Executa séries normalmente
-   c. Último Descanso → banner de conclusão + registro
+   c. Opção A: concluir todas as séries → automático
+   d. Opção B: clicar "✅ Concluir treino" no final
+   e. Banner + redirecionamento automático ao Dashboard (2 s)
 
 3. Dashboard:
    a. Aba "Dashboard" → cartões com estatísticas
    b. Volta para "Treino" quando quiser
-
-4. Dia seguinte:
-   Sugestão automática: se fez A ontem, mostra B
 ```
-
-### Alternância inteligente
-
-Baseado no `treino_log`: se o último foi A, sugere B, e vice-versa. Elimina a decisão matinal.
 
 ---
 

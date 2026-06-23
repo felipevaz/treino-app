@@ -178,6 +178,12 @@
 
     .screen.visible {
       display: block;
+      animation: fadeIn 0.35s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* ===== BANNER ===== */
@@ -200,6 +206,7 @@
 
     .banner.show {
       display: block;
+      animation: fadeIn 0.3s ease;
     }
 
     .banner .btn-dash {
@@ -226,6 +233,26 @@
       background: var(--card);
       border-radius: 12px;
       padding: 16px;
+    }
+
+    /* ===== FINISH BUTTON ===== */
+
+    .finish-workout {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      background: #22c55e;
+      color: black;
+      font-weight: 700;
+      font-size: 1.1em;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: transform 0.15s;
+    }
+
+    .finish-workout:active {
+      transform: scale(0.97);
     }
 
     .dash-card-title {
@@ -538,6 +565,13 @@
       });
 
       app.appendChild(container);
+
+      // Finish workout button
+      const finishBtn = document.createElement("button");
+      finishBtn.className = "finish-workout";
+      finishBtn.textContent = "✅ Concluir treino";
+      finishBtn.addEventListener("click", function() { completeWorkout(key); });
+      container.appendChild(finishBtn);
     }
 
     /* ================= BIND BUTTONS ================= */
@@ -574,8 +608,7 @@
             const allStarts = container.querySelectorAll(".start");
             const allDone = Array.from(allStarts).every(b => b.disabled);
             if (allDone) {
-              logWorkout(key);
-              showBanner(key);
+              completeWorkout(key);
             }
           });
         });
@@ -636,6 +669,13 @@
       localStorage.setItem("treino_log", JSON.stringify(log));
     }
 
+    /* ================= COMPLETE WORKOUT ================= */
+
+    function completeWorkout(key) {
+      logWorkout(key);
+      showBanner(key);
+    }
+
     /* ================= BANNER ================= */
 
     function showBanner(key) {
@@ -646,7 +686,8 @@
 
       setTimeout(() => {
         banner.classList.remove("show");
-      }, 4000);
+        showDashboard();
+      }, 2000);
     }
 
     /* ================= SCREENS ================= */
@@ -834,14 +875,8 @@
       });
     });
 
-    // Smart alternation: suggest opposite of last completed workout
-    const logData = JSON.parse(localStorage.getItem("treino_log") || "[]");
-    let suggested = "A";
-    if (logData.length > 0) {
-      const lastEntry = logData[logData.length - 1];
-      suggested = lastEntry.type === "A" ? "B" : "A";
-    }
-    switchWorkout(suggested);
+    // Open on Dashboard by default
+    showDashboard();
 
   </script>
 

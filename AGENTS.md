@@ -343,7 +343,21 @@ Estrutura: `{ date, type, completedAt }` em array JSON.
 
 ## **Alternância Inteligente**
 
-Ao carregar o app, o último treino do `treino_log` é lido. O treino sugerido é o oposto do último (se fez A, sugere B; se fez B, sugere A). Se não há histórico, usa A como padrão.
+O app sempre abre no **Dashboard**. Ao clicar em "Treino A" ou "Treino B", o respectivo treino é exibido. Não há sugestão automática — o usuário escolhe qual treino fazer.
+
+---
+
+## **Conclusão do Treino**
+
+O treino pode ser concluído de duas formas:
+
+1. **Automática**: quando todas as 3 séries de todos os exercícios com cronômetro são marcadas como Feito.
+2. **Manual**: botão "✅ Concluir treino" no final de cada treino — útil para registrar a conclusão mesmo que a mobilidade ou séries opcionais não tenham sido feitas.
+
+Em ambos os casos:
+
+- Banner verde "Treino A/B concluído! 🎉" aparece no rodapé
+- Após 2 segundos, o banner desaparece e o **Dashboard** é aberto automaticamente
 
 ---
 
