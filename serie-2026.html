@@ -1,15 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Treino</title>
-
-  <!-- Fonte Outfit -->
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
-
   <style>
     :root {
       --bg: #0b1120;
@@ -18,11 +13,9 @@
       --muted: #94a3b8;
       --neg: #ef4444;
       --tab: #1e293b;
-      --tab-active: #22c55e;
       --accent: #f59e0b;
       --border: #1e293b;
     }
-
     body {
       font-family: 'Outfit', sans-serif;
       background: var(--bg);
@@ -30,1026 +23,456 @@
       padding: 14px;
       margin: 0;
     }
-
-    /* ===== HEADER / LOGO ===== */
-
-    .header {
-      text-align: center;
-      padding: 4px 0 2px 0;
-    }
-
+    .header { text-align: center; padding: 4px 0 2px 0; }
     #logo {
-      width: 128px;
-      height: auto;
+      width: 128px; height: auto;
       transition: width 0.3s ease, transform 0.3s ease;
-      border-radius: 12px;
-      display: inline-block;
+      border-radius: 12px; display: inline-block;
     }
-
-    .header--dash #logo {
-      width: 176px;
-      height: auto;
-    }
-
-    /* ===== WORKOUT HEADER ===== */
+    .header--dash #logo { width: 176px; height: auto; }
 
     .workout-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
     }
-
     .workout-header .workout-title {
-      font-size: 1.3em;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      font-size: 1.3em; font-weight: 700;
+      display: flex; align-items: center; gap: 10px;
     }
-
-    .btn-home {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: none;
-      background: var(--tab);
-      color: var(--muted);
-      font-size: 1.1em;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: background 0.15s, transform 0.12s;
+    .btn-back {
+      width: 36px; height: 36px; border-radius: 50%; border: none;
+      background: var(--tab); color: var(--muted); font-size: 1.2em;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: background 0.15s, transform 0.12s;
       box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
-
-    .btn-home:active {
-      transform: scale(0.92);
-    }
-
-    /* ===== STATION BADGE ===== */
-
+    .btn-back:active { transform: scale(0.92); }
     .station-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: #22c55e;
-      color: white;
-      font-weight: 700;
-      font-size: 0.85em;
-      flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #22c55e; color: white; font-weight: 700;
+      font-size: 0.85em; flex-shrink: 0;
     }
-
-    .station-badge-lg {
-      width: 48px;
-      height: 48px;
-      font-size: 1.2em;
-    }
-
-    /* ===== EXERCISES ===== */
+    .station-badge-lg { width: 48px; height: 48px; font-size: 1.2em; }
 
     .exercise {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 16px;
-      margin-bottom: 14px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px; margin-bottom: 14px;
     }
-
     .title {
-      font-size: 1.3em;
-      font-weight: 700;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      font-size: 1.3em; font-weight: 700; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 10px;
     }
-
     .title-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: #22c55e;
-      color: black;
-      font-size: 0.75em;
-      font-weight: 700;
-      flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 28px; height: 28px; border-radius: 50%;
+      background: #22c55e; color: black; font-size: 0.75em;
+      font-weight: 700; flex-shrink: 0;
     }
-
-    .row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
-    }
-
-    .row span {
-      background: #020617;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 0.9em;
-    }
-
-    .row span[contenteditable] {
-      border-bottom: 1px dashed var(--muted);
-      min-width: 50px;
-    }
-
+    .row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+    .row span { background: #020617; padding: 4px 10px; border-radius: 6px; font-size: 0.9em; }
+    .row span[contenteditable] { border-bottom: 1px dashed var(--muted); min-width: 50px; }
     .obs {
-      background: #020617;
-      padding: 8px 10px;
-      border-radius: 8px;
-      font-size: 0.85em;
-      margin-bottom: 10px;
-      color: var(--muted);
+      background: #020617; padding: 8px 10px; border-radius: 8px;
+      font-size: 0.85em; margin-bottom: 10px; color: var(--muted);
     }
-
-    .obs[contenteditable] {
-      border: 1px dashed var(--border);
-    }
-
-    .obs[contenteditable]:focus {
-      color: var(--text);
-      border-color: var(--muted);
-    }
-
-    .mobility-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .mobility-list li {
-      background: #020617;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 0.9em;
-    }
-
-    .mobility-list li::before {
-      content: "○ ";
-      color: var(--muted);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-rows: auto repeat(3, auto);
-      gap: 8px;
-    }
-
-    .button-row {
-      display: flex;
-      gap: 8px;
-    }
-
-    /* ===== BUTTONS ===== */
+    .obs[contenteditable] { border: 1px dashed var(--border); }
+    .obs[contenteditable]:focus { color: var(--text); border-color: var(--muted); }
+    .mobility-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+    .mobility-list li { background: #020617; padding: 8px 12px; border-radius: 8px; font-size: 0.9em; }
+    .mobility-list li::before { content: "○ "; color: var(--muted); }
+    .grid { display: grid; grid-template-rows: auto repeat(3, auto); gap: 8px; }
+    .button-row { display: flex; gap: 8px; }
 
     button {
-      flex: 1;
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
-      font-family: inherit;
-      font-weight: 600;
-      font-size: 0.9em;
-      color: black;
-      min-width: 0;
+      flex: 1; padding: 10px; border-radius: 10px; border: none;
+      font-family: inherit; font-weight: 600; font-size: 0.9em;
+      color: black; min-width: 0;
       box-shadow: 0 2px 6px rgba(0,0,0,0.25);
       transition: transform 0.12s, box-shadow 0.12s;
     }
-
-    button:active {
-      transform: scale(0.96);
-      box-shadow: 0 1px 2px rgba(0,0,0,0.25);
-    }
-
-    .start {
-      background: #22c55e;
-    }
-
-    .finish {
-      background: #38bdf8;
-    }
-
+    button:active { transform: scale(0.96); box-shadow: 0 1px 2px rgba(0,0,0,0.25); }
+    .start { background: #22c55e; }
+    .finish { background: #38bdf8; }
     .done {
-      opacity: 0.4;
-      background: #64748b;
-      cursor: default;
-      box-shadow: none;
+      opacity: 0.4; background: #64748b; cursor: default; box-shadow: none;
     }
-
-    .done:active {
-      transform: none;
-      box-shadow: none;
-    }
-
-    .blink {
-      animation: pulse 1s infinite;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.4; }
-      100% { opacity: 1; }
-    }
+    .done:active { transform: none; box-shadow: none; }
+    .blink { animation: pulse 1s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
     .timer {
-      font-size: 3em;
-      font-weight: 700;
-      text-align: center;
-      padding: 12px 0;
-      margin-bottom: 10px;
-      background: #020617;
-      border-radius: 12px;
-      letter-spacing: 0.05em;
-      color: var(--muted);
+      font-size: 3em; font-weight: 700; text-align: center; padding: 12px 0;
+      margin-bottom: 10px; background: #020617; border-radius: 12px;
+      letter-spacing: 0.05em; color: var(--muted);
     }
 
-    /* ===== SCREENS ===== */
-
-    .screen {
-      display: none;
-    }
-
-    .screen.visible {
-      display: block;
-      animation: fadeIn 0.35s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ===== BANNER ===== */
+    .screen { display: none; }
+    .screen.visible { display: block; animation: fadeIn 0.35s ease; }
+    .workout { display: none; }
+    .workout.visible { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     .banner {
-      display: none;
-      position: fixed;
-      bottom: 24px;
-      left: 14px;
-      right: 14px;
-      background: #22c55e;
-      color: black;
-      font-weight: 700;
-      font-size: 1.1em;
-      padding: 16px;
-      border-radius: 14px;
-      text-align: center;
-      z-index: 10;
+      display: none; position: fixed; bottom: 24px; left: 14px; right: 14px;
+      background: #22c55e; color: black; font-weight: 700; font-size: 1.1em;
+      padding: 16px; border-radius: 14px; text-align: center; z-index: 10;
       box-shadow: 0 4px 20px rgba(34,197,94,0.3);
     }
-
-    .banner.show {
-      display: block;
-      animation: fadeIn 0.3s ease;
-    }
-
+    .banner.show { display: block; animation: fadeIn 0.3s ease; }
     .banner .btn-dash {
-      display: inline-block;
-      margin-top: 8px;
-      padding: 8px 20px;
-      border-radius: 8px;
-      border: none;
-      background: black;
-      color: #22c55e;
-      font-weight: 700;
-      font-size: 0.9em;
-      cursor: pointer;
+      display: inline-block; margin-top: 8px; padding: 8px 20px; border-radius: 8px;
+      border: none; background: black; color: #22c55e; font-weight: 700; font-size: 0.9em; cursor: pointer;
     }
 
-    /* ===== DASHBOARD ===== */
-
-    .dash-grid {
-      display: grid;
-      gap: 12px;
-    }
-
+    .dash-grid { display: grid; gap: 12px; }
     .dash-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 16px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px;
     }
-
     .dash-card-title {
-      font-size: 0.8em;
-      color: var(--muted);
-      margin-bottom: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
+      font-size: 0.8em; color: var(--muted); margin-bottom: 4px;
+      text-transform: uppercase; letter-spacing: 0.06em;
     }
-
-    .dash-card-value {
-      font-size: 2em;
-      font-weight: 700;
-    }
-
-    .dash-card-sub {
-      font-size: 0.9em;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .dash-week {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .dash-day {
-      flex: 1;
-      text-align: center;
-    }
-
-    .dash-day-label {
-      font-size: 0.65em;
-      color: var(--muted);
-      margin-bottom: 4px;
-      text-transform: uppercase;
-    }
-
+    .dash-card-value { font-size: 2em; font-weight: 700; }
+    .dash-card-sub { font-size: 0.9em; color: var(--muted); margin-top: 2px; }
+    .dash-week { display: flex; gap: 8px; margin-top: 8px; }
+    .dash-day { flex: 1; text-align: center; }
+    .dash-day-label { font-size: 0.65em; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; }
     .dash-day-dot {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      font-size: 0.85em;
-      transition: background 0.2s;
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 50%; font-size: 0.85em; transition: background 0.2s;
     }
-
-    .dash-day-dot.on {
-      background: #22c55e;
-      color: black;
-    }
-
-    .dash-day-dot.off {
-      background: #1e293b;
-      color: var(--muted);
-    }
-
-    .dash-dist {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin-top: 8px;
-    }
-
-    .dash-dist-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.9em;
-    }
-
-    .dash-dist-row span:last-child {
-      font-weight: 700;
-    }
-
+    .dash-day-dot.on { background: #22c55e; color: black; }
+    .dash-day-dot.off { background: #1e293b; color: var(--muted); }
+    .dash-dist { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+    .dash-dist-row { display: flex; justify-content: space-between; font-size: 0.9em; }
+    .dash-dist-row span:last-child { font-weight: 700; }
     .dash-bar {
-      display: flex;
-      height: 10px;
-      border-radius: 5px;
-      overflow: hidden;
-      background: #1e293b;
-      margin-top: 4px;
+      display: flex; height: 10px; border-radius: 5px; overflow: hidden;
+      background: #1e293b; margin-top: 4px;
     }
+    .dash-bar-a { background: #22c55e; transition: width 0.4s ease; }
+    .dash-bar-b { background: #38bdf8; transition: width 0.4s ease; }
 
-    .dash-bar-a {
-      background: #22c55e;
-      transition: width 0.4s ease;
-    }
-
-    .dash-bar-b {
-      background: #38bdf8;
-      transition: width 0.4s ease;
-    }
-
-    /* ===== DASHBOARD WORKOUT SELECTION ===== */
-
-    .dash-workout-grid {
-      display: grid;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
+    .dash-workout-grid { display: grid; gap: 12px; margin-bottom: 20px; }
     .dash-workout-btn {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px;
-      cursor: pointer;
+      display: flex; align-items: center; gap: 14px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 18px; cursor: pointer;
       transition: background 0.15s, transform 0.12s;
     }
-
-    .dash-workout-btn:active {
-      transform: scale(0.98);
-      background: #0a1525;
-    }
-
-    .dash-workout-btn .dash-workout-label {
-      font-size: 1.2em;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .dash-workout-btn .dash-workout-sub {
-      font-size: 0.85em;
-      color: var(--muted);
-    }
-
-    /* ===== FINISH BUTTON ===== */
+    .dash-workout-btn:active { transform: scale(0.98); background: #0a1525; }
+    .dash-workout-label { font-size: 1.2em; font-weight: 700; color: var(--text); }
+    .dash-workout-sub { font-size: 0.85em; color: var(--muted); }
 
     .finish-workout {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: none;
-      background: #22c55e;
-      color: black;
-      font-weight: 700;
-      font-size: 1.1em;
-      cursor: pointer;
-      margin-top: 6px;
-      box-shadow: 0 2px 8px rgba(34,197,94,0.3);
+      width: 100%; padding: 14px; border-radius: 12px; border: none;
+      background: #22c55e; color: black; font-weight: 700; font-size: 1.1em;
+      cursor: pointer; margin-top: 6px; box-shadow: 0 2px 8px rgba(34,197,94,0.3);
     }
-
-    .finish-workout:active {
-      transform: scale(0.97);
-    }
-
+    .finish-workout:active { transform: scale(0.97); }
     .btn-export {
-      width: 100%;
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      font-weight: 600;
-      font-size: 0.95em;
-      cursor: pointer;
-      margin-top: 4px;
-      transition: background 0.15s, color 0.15s;
-      box-shadow: none;
+      width: 100%; padding: 12px; border-radius: 12px;
+      border: 1px solid var(--border); background: transparent; color: var(--muted);
+      font-weight: 600; font-size: 0.95em; cursor: pointer; margin-top: 4px;
+      transition: background 0.15s, color 0.15s; box-shadow: none;
     }
-
-    .btn-export:active {
-      transform: scale(0.97);
-    }
-
-    .btn-export:hover {
-      background: var(--tab);
-      color: var(--text);
-    }
+    .btn-export:active { transform: scale(0.97); }
+    .btn-export:hover { background: var(--tab); color: var(--text); }
   </style>
-
 </head>
-
 <body>
 
-  <div id="header" class="header">
-    <img src="image.png" alt="Treino" id="logo">
-  </div>
+<div id="header" class="header">
+  <img src="image.png" alt="Treino" id="logo">
+</div>
 
-  <div id="app"></div>
+<div id="app"></div>
+<div id="screen-dashboard" class="screen"></div>
+<div id="banner" class="banner"></div>
 
-  <div id="screen-dashboard" class="screen"></div>
+<script>
+const workouts = { A: [
+  { name:"Mobilidade", reps:"Sequencia", load:"0 kg", mobility:true, list:["Floppy arm - 10","Cat/cow - 10","Best stretch - 10"] },
+  { name:"Pallof Press", reps:"10-12 / lado", load:"elastico", time:40, rest:30 },
+  { name:"Agachamento unilateral", reps:"12", load:"5 kg", time:40, rest:30 },
+  { name:"Flexao de braco", reps:"8-12", load:"peso corporal", time:40, rest:30 },
+  { name:"Rotacao externa do antebraco", reps:"10", load:"4 kg", time:40, rest:30 },
+  { name:"Sleeper Stretch", reps:"1", load:"0 kg", mobility:true, list:[] }
+], B: [
+  { name:"Mobilidade", reps:"Sequencia", load:"0 kg", mobility:true, list:["Floppy arm - 10","Cat/cow - 10","Best stretch - 10"] },
+  { name:"Barra fixa", reps:"4 / 3 / 2", load:"peso corporal", time:40, rest:30 },
+  { name:"Remada", reps:"10-12", load:"kettlebell 12 kg", time:40, rest:30 },
+  { name:"Levantamento terra KB", reps:"12", load:"15 kg", time:40, rest:30 },
+  { name:"Hanging Knee Raise", reps:"8-12", load:"peso corporal", time:40, rest:30 }
+]};
 
-  <div id="banner" class="banner"></div>
+let currentTimer = null;
 
-  <script>
+function startCountdown(seconds, display, btn) {
+  clearInterval(currentTimer);
+  document.querySelectorAll(".blink").forEach(b => b.classList.remove("blink"));
+  btn.classList.add("blink");
+  display.style.color = window.getComputedStyle(btn).backgroundColor;
+  let t = seconds;
+  display.textContent = format(t);
+  currentTimer = setInterval(() => {
+    t--;
+    display.textContent = format(t);
+    if (t < 0) display.style.color = "var(--neg)";
+  }, 1000);
+}
 
-    /* ================= DADOS ================= */
+function format(s) {
+  const sign = s < 0 ? "-" : "";
+  s = Math.abs(s);
+  return sign + "0:" + s.toString().padStart(2, "0");
+}
 
-    const workouts = {
-      A: [
-        {
-          name: "Mobilidade",
-          reps: "Sequência",
-          load: "0 kg",
-          mobility: true,
-          list: [
-            "Floppy arm – 10",
-            "Cat/cow – 10",
-            "Best stretch – 10"
-          ]
-        },
-        {
-          name: "Pallof Press",
-          reps: "10–12 / lado",
-          load: "elástico",
-          time: 40,
-          rest: 30
-        },
-        {
-          name: "Agachamento unilateral",
-          reps: "12",
-          load: "5 kg",
-          time: 40,
-          rest: 30
-        },
-        {
-          name: "Flexão de braço",
-          reps: "8–12",
-          load: "peso corporal",
-          time: 40,
-          rest: 30
-        },
-        {
-          name: "Rotação externa do antebraço",
-          reps: "10",
-          load: "4 kg",
-          time: 40,
-          rest: 30
-        },
-        {
-          name: "Sleeper Stretch",
-          reps: "1",
-          load: "0 kg",
-          mobility: true,
-          list: []
-        }
-      ],
+const app = document.getElementById("app");
 
-      B: [
-        {
-          name: "Mobilidade",
-          reps: "Sequência",
-          load: "0 kg",
-          mobility: true,
-          list: [
-            "Floppy arm – 10",
-            "Cat/cow – 10",
-            "Best stretch – 10"
-          ]
-        },
-        {
-          name: "Barra fixa",
-          reps: "4 / 3 / 2",
-          load: "peso corporal",
-          time: 40,
-          rest: 30
-        },
-        {
-          name: "Remada",
-          reps: "10–12",
-          load: "kettlebell 12 kg",
-          time: 40,
-          rest: 30
-        },
-        {
-          name: "Levantamento terra KB",
-          reps: "12",
-          load: "15 kg",
-          time: 40,
-          rest: 30
-        },
-        {
-          name: "Hanging Knee Raise",
-          reps: "8–12",
-          load: "peso corporal",
-          time: 40,
-          rest: 30
-        }
-      ]
-    };
+function renderWorkout(key) {
+  const list = workouts[key];
+  const container = document.createElement("div");
+  container.className = "workout";
+  container.id = "workout" + key;
 
-    /* ================= TIMER ================= */
+  const header = document.createElement("div");
+  header.className = "workout-header";
 
-    let currentTimer = null;
+  const btnBack = document.createElement("button");
+  btnBack.className = "btn-back";
+  btnBack.textContent = "\u21A9";
+  btnBack.addEventListener("click", showDashboard);
+  header.appendChild(btnBack);
 
-    function startCountdown(seconds, display, btn) {
-      clearInterval(currentTimer);
+  const titleDiv = document.createElement("div");
+  titleDiv.className = "workout-title";
+  const badge = document.createElement("span");
+  badge.className = "station-badge";
+  badge.textContent = key;
+  titleDiv.appendChild(badge);
+  titleDiv.appendChild(document.createTextNode(" Treino " + key));
+  header.appendChild(titleDiv);
+  container.appendChild(header);
 
-      document.querySelectorAll(".blink").forEach(b => b.classList.remove("blink"));
+  list.forEach(function(ex, i) {
+    var div = document.createElement("div");
+    div.className = "exercise";
+    var num = i + 1;
 
-      btn.classList.add("blink");
-      display.style.color = window.getComputedStyle(btn).backgroundColor;
-
-      let t = seconds;
-
-      display.textContent = format(t);
-
-      currentTimer = setInterval(() => {
-        t--;
-        display.textContent = format(t);
-
-        if (t < 0) {
-          display.style.color = "var(--neg)";
-        }
-
-      }, 1000);
+    var mobilityHTML = "";
+    if (ex.mobility) {
+      mobilityHTML = '<ul class="mobility-list">';
+      ex.list.forEach(function(e) { mobilityHTML += "<li>" + e + "</li>"; });
+      mobilityHTML += "</ul>";
     }
 
-    function format(s) {
-      const sign = s < 0 ? "-" : "";
-      s = Math.abs(s);
-      return sign + "0:" + s.toString().padStart(2, "0");
+    var seriesHTML = "";
+    if (!ex.mobility) {
+      seriesHTML =
+        '<div class="timer" id="timer' + key + i + '">0:00</div>' +
+        '<div class="button-row"><button class="start">Serie 1</button><button class="finish">Descanso</button></div>' +
+        '<div class="button-row"><button class="start">Serie 2</button><button class="finish">Descanso</button></div>' +
+        '<div class="button-row"><button class="start">Serie 3</button><button class="finish">Descanso</button></div>';
     }
 
-    /* ================= RENDER ================= */
+    div.innerHTML =
+      '<div class="title"><span class="title-badge">' + num + '</span>' + ex.name + '</div>' +
+      '<div class="row"><span>Reps:</span><span contenteditable>' + ex.reps + '</span><span>Carga:</span><span contenteditable>' + ex.load + '</span></div>' +
+      '<div class="obs" contenteditable>Observacoes...</div>' +
+      mobilityHTML +
+      (!ex.mobility ? '<div class="grid">' + seriesHTML + '</div>' : "");
 
-    const app = document.getElementById("app");
+    container.appendChild(div);
+  });
 
-    function renderWorkout(key) {
-      const list = workouts[key];
-      const container = document.createElement("div");
-      container.className = "workout";
-      container.id = "workout" + key;
+  app.appendChild(container);
 
-      // Workout header with home button and station badge
-      const header = document.createElement("div");
-      header.className = "workout-header";
-      header.innerHTML =
-        '<button class="btn-home" onclick="showDashboard()">🏠</button>' +
-        '<div class="workout-title">' +
-          '<span class="station-badge">' + key + '</span> Treino ' + key +
-        '</div>';
-      container.appendChild(header);
+  var finishBtn = document.createElement("button");
+  finishBtn.className = "finish-workout";
+  finishBtn.textContent = "Concluir treino";
+  finishBtn.addEventListener("click", function() { completeWorkout(key); });
+  container.appendChild(finishBtn);
+}
 
-      list.forEach((ex, i) => {
-
-        const div = document.createElement("div");
-        div.className = "exercise";
-        const num = i + 1;
-
-        let mobilityHTML = "";
-        if (ex.mobility) {
-          mobilityHTML = `
-        <ul class="mobility-list">
-          ${ex.list.map(e => `<li>${e}</li>`).join("")}
-        </ul>
-      `;
-        }
-
-        let seriesHTML = "";
-        if (!ex.mobility) {
-          seriesHTML = `
-        <div class="timer" id="timer${key}${i}">0:00</div>
-        <div class="button-row">
-          <button class="start">▶ Série 1</button>
-          <button class="finish">✔ Descanso</button>
-        </div>
-        <div class="button-row">
-          <button class="start">▶ Série 2</button>
-          <button class="finish">✔ Descanso</button>
-        </div>
-        <div class="button-row">
-          <button class="start">▶ Série 3</button>
-          <button class="finish">✔ Descanso</button>
-        </div>
-      `;
-        }
-
-        div.innerHTML = `
-      <div class="title">
-        <span class="title-badge">${num}</span>
-        ${ex.name}
-      </div>
-
-      <div class="row">
-        <span>Reps:</span>
-        <span contenteditable>${ex.reps}</span>
-
-        <span>Carga:</span>
-        <span contenteditable>${ex.load}</span>
-      </div>
-
-      <div class="obs" contenteditable>Observações…</div>
-
-      ${mobilityHTML}
-      ${!ex.mobility ? `<div class="grid">${seriesHTML}</div>` : ""}
-    `;
-
-        container.appendChild(div);
+function bindButtons(key) {
+  var container = document.getElementById("workout" + key);
+  var list = workouts[key];
+  container.querySelectorAll(".exercise").forEach(function(box, i) {
+    if (list[i].mobility) return;
+    var timer = box.querySelector(".timer");
+    var starts = box.querySelectorAll(".start");
+    var finishes = box.querySelectorAll(".finish");
+    starts.forEach(function(btn, idx) {
+      btn.addEventListener("click", function() { startCountdown(list[i].time, timer, btn); });
+    });
+    finishes.forEach(function(btn, idx) {
+      btn.addEventListener("click", function() {
+        startCountdown(list[i].rest, timer, btn);
+        var startBtn = starts[idx];
+        startBtn.disabled = true;
+        startBtn.classList.add("done");
+        startBtn.textContent = "Feito";
+        var allStarts = container.querySelectorAll(".start");
+        var allDone = Array.from(allStarts).every(function(b) { return b.disabled; });
+        if (allDone) completeWorkout(key);
       });
-
-      app.appendChild(container);
-
-      // Finish workout button
-      const finishBtn = document.createElement("button");
-      finishBtn.className = "finish-workout";
-      finishBtn.textContent = "✅ Concluir treino";
-      finishBtn.addEventListener("click", function() { completeWorkout(key); });
-      container.appendChild(finishBtn);
-    }
-
-    /* ================= BIND BUTTONS ================= */
-
-    function bindButtons(key) {
-      const container = document.getElementById("workout" + key);
-      const list = workouts[key];
-
-      container.querySelectorAll(".exercise").forEach((box, i) => {
-
-        if (list[i].mobility) return;
-
-        const timer = box.querySelector(".timer");
-
-        const starts = box.querySelectorAll(".start");
-        const finishes = box.querySelectorAll(".finish");
-
-        starts.forEach((btn, idx) => {
-          btn.addEventListener("click", () => {
-            startCountdown(list[i].time, timer, btn);
-          });
-        });
-
-        finishes.forEach((btn, idx) => {
-          btn.addEventListener("click", () => {
-            startCountdown(list[i].rest, timer, btn);
-
-            const startBtn = starts[idx];
-            startBtn.disabled = true;
-            startBtn.classList.add("done");
-            startBtn.textContent = "Feito";
-
-            // Check if all series are done
-            const allStarts = container.querySelectorAll(".start");
-            const allDone = Array.from(allStarts).every(b => b.disabled);
-            if (allDone) {
-              completeWorkout(key);
-            }
-          });
-        });
-
-      });
-    }
-
-    /* ================= PERSISTENCE ================= */
-
-    function setupPersistence(key) {
-      const container = document.getElementById("workout" + key);
-      const list = workouts[key];
-
-      container.querySelectorAll(".exercise").forEach((box, i) => {
-
-        const spans = box.querySelectorAll("span[contenteditable]");
-        const repsEl = spans[0];
-        const loadEl = spans[1];
-        const obsEl = box.querySelector(".obs[contenteditable]");
-
-        if (!repsEl || !loadEl || !obsEl) return;
-
-        const prefix = "treino" + key + "_";
-
-        // Restore saved values
-        const savedReps = localStorage.getItem(prefix + "reps_" + i);
-        const savedLoad = localStorage.getItem(prefix + "load_" + i);
-        const savedObs = localStorage.getItem(prefix + "obs_" + i);
-        if (savedReps !== null) repsEl.textContent = savedReps;
-        if (savedLoad !== null) loadEl.textContent = savedLoad;
-        if (savedObs !== null) obsEl.textContent = savedObs;
-
-        // Save on input
-        repsEl.addEventListener("input", () => {
-          localStorage.setItem(prefix + "reps_" + i, repsEl.textContent);
-        });
-        loadEl.addEventListener("input", () => {
-          localStorage.setItem(prefix + "load_" + i, loadEl.textContent);
-        });
-        obsEl.addEventListener("input", () => {
-          localStorage.setItem(prefix + "obs_" + i, obsEl.textContent);
-        });
-      });
-    }
-
-    /* ================= LOG ================= */
-
-    function logWorkout(key) {
-      const log = JSON.parse(localStorage.getItem("treino_log") || "[]");
-      const today = new Date().toISOString().slice(0, 10);
-      const entry = { date: today, type: key, completedAt: new Date().toISOString() };
-
-      const idx = log.findIndex(e => e.date === today);
-      if (idx >= 0) log[idx] = entry;
-      else log.push(entry);
-
-      localStorage.setItem("treino_log", JSON.stringify(log));
-    }
-
-    /* ================= COMPLETE WORKOUT ================= */
-
-    function completeWorkout(key) {
-      logWorkout(key);
-      showBanner(key);
-    }
-
-    /* ================= BANNER ================= */
-
-    function showBanner(key) {
-      const banner = document.getElementById("banner");
-      banner.innerHTML = "Treino " + key + " concluído! 🎉" +
-        '<br><button class="btn-dash" onclick="showDashboard()">Ver Dashboard</button>';
-      banner.classList.add("show");
-
-      setTimeout(() => {
-        banner.classList.remove("show");
-        showDashboard();
-      }, 2000);
-    }
-
-    /* ================= NAVIGATION ================= */
-
-    function showWorkout(key) {
-      // Hide dashboard
-      document.getElementById("screen-dashboard").classList.remove("visible");
-
-      // Show selected workout
-      document.querySelectorAll(".workout").forEach(c => c.classList.remove("visible"));
-      document.getElementById("workout" + key).classList.add("visible");
-
-      // Logo compact
-      document.getElementById("header").classList.remove("header--dash");
-
-      localStorage.setItem("treino_selected", key);
-    }
-
-    function showDashboard() {
-      // Hide all workouts
-      document.querySelectorAll(".workout").forEach(c => c.classList.remove("visible"));
-
-      // Show dashboard
-      document.getElementById("screen-dashboard").classList.add("visible");
-
-      // Logo expanded
-      document.getElementById("header").classList.add("header--dash");
-
-      renderDashboard();
-    }
-
-    /* ================= DASHBOARD ================= */
-
-    function renderDashboard() {
-      const log = JSON.parse(localStorage.getItem("treino_log") || "[]");
-
-      // Last workout
-      let lastText = "Nenhum";
-      if (log.length > 0) {
-        const last = log[log.length - 1];
-        const d = new Date(last.completedAt);
-        const dateStr = d.toLocaleDateString("pt-BR");
-        lastText = "Treino " + last.type + " — " + dateStr;
-      }
-
-      const total = log.length;
-
-      // Streak
-      let streak = 0;
-      if (log.length > 0) {
-        const sorted = log.slice().sort((a, b) => b.date.localeCompare(a.date));
-        const lastDate = sorted[0].date;
-        const todayDate = new Date();
-        const lastDt = new Date(lastDate + "T12:00:00");
-        const diffDays = Math.round((todayDate - lastDt) / 86400000);
-
-        if (diffDays <= 1) {
-          streak = 1;
-          for (let i = 1; i < sorted.length; i++) {
-            const prev = new Date(sorted[i - 1].date + "T12:00:00");
-            const curr = new Date(sorted[i].date + "T12:00:00");
-            const gap = Math.round((prev - curr) / 86400000);
-            if (gap === 1) streak++;
-            else break;
-          }
-        }
-      }
-
-      const distA = log.filter(e => e.type === "A").length;
-      const distB = log.filter(e => e.type === "B").length;
-      const distTotal = distA + distB || 1;
-      const pctA = Math.round(distA / distTotal * 100);
-      const pctB = Math.round(distB / distTotal * 100);
-
-      // Last 7 days
-      const weekDays = [];
-      for (let i = 6; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        const dateStr = d.toISOString().slice(0, 10);
-        const dayLabel = d.toLocaleDateString("pt-BR", { weekday: "short" }).slice(0, 3);
-        const trained = log.some(e => e.date === dateStr);
-        weekDays.push({ label: dayLabel, on: trained });
-      }
-
-      const weekHTML = weekDays.map(d =>
-        '<div class="dash-day">' +
-          '<div class="dash-day-label">' + d.label + '</div>' +
-          '<div class="dash-day-dot ' + (d.on ? "on" : "off") + '">' + (d.on ? "✔" : "✗") + '</div>' +
-        '</div>'
-      ).join("");
-
-      document.getElementById("screen-dashboard").innerHTML =
-
-        // Workout selection buttons with station badges
-        '<div class="dash-workout-grid">' +
-          '<div class="dash-workout-btn" onclick="showWorkout(\'A\')">' +
-            '<span class="station-badge station-badge-lg">A</span>' +
-            '<div>' +
-              '<div class="dash-workout-label">Treino A</div>' +
-              '<div class="dash-workout-sub">' + distA + ' treinos realizados</div>' +
-            '</div>' +
-          '</div>' +
-          '<div class="dash-workout-btn" onclick="showWorkout(\'B\')">' +
-            '<span class="station-badge station-badge-lg">B</span>' +
-            '<div>' +
-              '<div class="dash-workout-label">Treino B</div>' +
-              '<div class="dash-workout-sub">' + distB + ' treinos realizados</div>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-
-        '<div class="dash-grid">' +
-
-          '<div class="dash-card">' +
-            '<div class="dash-card-title">Último treino</div>' +
-            '<div class="dash-card-value">' + lastText + '</div>' +
-          '</div>' +
-
-          '<div class="dash-card">' +
-            '<div class="dash-card-title">Total de treinos</div>' +
-            '<div class="dash-card-value">' + total + '</div>' +
-          '</div>' +
-
-          '<div class="dash-card">' +
-            '<div class="dash-card-title">Sequência atual</div>' +
-            '<div class="dash-card-value">' + (streak > 0 ? "🔥 " : "") + streak + '</div>' +
-            '<div class="dash-card-sub">' + (streak === 1 ? "dia" : "dias") + ' seguidos</div>' +
-          '</div>' +
-
-          '<div class="dash-card">' +
-            '<div class="dash-card-title">Distribuição</div>' +
-            '<div class="dash-dist">' +
-              '<div class="dash-dist-row"><span>Treino A</span><span>' + distA + '</span></div>' +
-              '<div class="dash-dist-row"><span>Treino B</span><span>' + distB + '</span></div>' +
-            '</div>' +
-            '<div class="dash-bar">' +
-              '<div class="dash-bar-a" style="width:' + pctA + '%"></div>' +
-              '<div class="dash-bar-b" style="width:' + pctB + '%"></div>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="dash-card">' +
-            '<div class="dash-card-title">Últimos 7 dias</div>' +
-            '<div class="dash-week">' + weekHTML + '</div>' +
-          '</div>' +
-
-          '<button class="btn-export" onclick="exportHistory()">📥 Exportar histórico (CSV)</button>' +
-
-        '</div>';
-    }
-
-    /* ================= EXPORT ================= */
-
-    function exportHistory() {
-      const log = JSON.parse(localStorage.getItem("treino_log") || "[]");
-      if (log.length === 0) return;
-
-      const csv = "date,type,completedAt\n" +
-        log.map(e => e.date + "," + e.type + "," + e.completedAt).join("\n");
-
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "treino_log.csv";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    /* ================= INIT ================= */
-
-    renderWorkout("A");
-    renderWorkout("B");
-
-    bindButtons("A");
-    bindButtons("B");
-
-    setupPersistence("A");
-    setupPersistence("B");
-
-    // Start on Dashboard
+    });
+  });
+}
+
+function setupPersistence(key) {
+  var container = document.getElementById("workout" + key);
+  container.querySelectorAll(".exercise").forEach(function(box, i) {
+    var spans = box.querySelectorAll("span[contenteditable]");
+    if (!spans[0] || !spans[1]) return;
+    var repsEl = spans[0], loadEl = spans[1];
+    var obsEl = box.querySelector(".obs[contenteditable]");
+    if (!obsEl) return;
+    var prefix = "treino" + key + "_";
+    var savedReps = localStorage.getItem(prefix + "reps_" + i);
+    var savedLoad = localStorage.getItem(prefix + "load_" + i);
+    var savedObs = localStorage.getItem(prefix + "obs_" + i);
+    if (savedReps !== null) repsEl.textContent = savedReps;
+    if (savedLoad !== null) loadEl.textContent = savedLoad;
+    if (savedObs !== null) obsEl.textContent = savedObs;
+    repsEl.addEventListener("input", function() { localStorage.setItem(prefix + "reps_" + i, repsEl.textContent); });
+    loadEl.addEventListener("input", function() { localStorage.setItem(prefix + "load_" + i, loadEl.textContent); });
+    obsEl.addEventListener("input", function() { localStorage.setItem(prefix + "obs_" + i, obsEl.textContent); });
+  });
+}
+
+function logWorkout(key) {
+  var log = JSON.parse(localStorage.getItem("treino_log") || "[]");
+  var today = new Date().toISOString().slice(0, 10);
+  var entry = { date: today, type: key, completedAt: new Date().toISOString() };
+  var idx = log.findIndex(function(e) { return e.date === today; });
+  if (idx >= 0) log[idx] = entry; else log.push(entry);
+  localStorage.setItem("treino_log", JSON.stringify(log));
+}
+
+function completeWorkout(key) {
+  logWorkout(key);
+  showBanner(key);
+}
+
+function showBanner(key) {
+  var banner = document.getElementById("banner");
+  banner.innerHTML = "Treino " + key + " concluido!" +
+    '<br><button class="btn-dash" onclick="showDashboard()">Ver Dashboard</button>';
+  banner.classList.add("show");
+  setTimeout(function() {
+    banner.classList.remove("show");
     showDashboard();
+  }, 2000);
+}
 
-  </script>
+function showWorkout(key) {
+  document.getElementById("screen-dashboard").classList.remove("visible");
+  document.querySelectorAll(".workout").forEach(function(c) { c.classList.remove("visible"); });
+  document.getElementById("workout" + key).classList.add("visible");
+  document.getElementById("header").classList.remove("header--dash");
+  localStorage.setItem("treino_selected", key);
+}
 
+function showDashboard() {
+  document.querySelectorAll(".workout").forEach(function(c) { c.classList.remove("visible"); });
+  document.getElementById("screen-dashboard").classList.add("visible");
+  document.getElementById("header").classList.add("header--dash");
+  renderDashboard();
+}
+
+function renderDashboard() {
+  var log = JSON.parse(localStorage.getItem("treino_log") || "[]");
+
+  var lastText = "Nenhum";
+  if (log.length > 0) {
+    var last = log[log.length - 1];
+    var d = new Date(last.completedAt);
+    lastText = "Treino " + last.type + " - " + d.toLocaleDateString("pt-BR");
+  }
+
+  var total = log.length;
+
+  var streak = 0;
+  if (log.length > 0) {
+    var sorted = log.slice().sort(function(a, b) { return b.date.localeCompare(a.date); });
+    var lastDate = sorted[0].date;
+    var todayDate = new Date();
+    var lastDt = new Date(lastDate + "T12:00:00");
+    var diffDays = Math.round((todayDate - lastDt) / 86400000);
+    if (diffDays <= 1) {
+      streak = 1;
+      for (var si = 1; si < sorted.length; si++) {
+        var prev = new Date(sorted[si-1].date + "T12:00:00");
+        var curr = new Date(sorted[si].date + "T12:00:00");
+        if (Math.round((prev - curr) / 86400000) === 1) streak++; else break;
+      }
+    }
+  }
+
+  var distA = log.filter(function(e) { return e.type === "A"; }).length;
+  var distB = log.filter(function(e) { return e.type === "B"; }).length;
+  var distTotal = distA + distB || 1;
+  var pctA = Math.round(distA / distTotal * 100);
+  var pctB = Math.round(distB / distTotal * 100);
+
+  var weekDays = "";
+  for (var wi = 6; wi >= 0; wi--) {
+    var d = new Date();
+    d.setDate(d.getDate() - wi);
+    var dateStr = d.toISOString().slice(0, 10);
+    var dayLabel = d.toLocaleDateString("pt-BR", { weekday: "short" }).slice(0, 3);
+    var trained = log.some(function(e) { return e.date === dateStr; });
+    weekDays +=
+      '<div class="dash-day"><div class="dash-day-label">' + dayLabel + '</div>' +
+      '<div class="dash-day-dot ' + (trained ? "on" : "off") + '">' + (trained ? "V" : "X") + '</div></div>';
+  }
+
+  document.getElementById("screen-dashboard").innerHTML =
+    '<div class="dash-workout-grid">' +
+      '<div class="dash-workout-btn" onclick="showWorkout(\'A\')">' +
+        '<span class="station-badge station-badge-lg">A</span>' +
+        '<div><div class="dash-workout-label">Treino A</div><div class="dash-workout-sub">' + distA + ' treinos realizados</div></div>' +
+      '</div>' +
+      '<div class="dash-workout-btn" onclick="showWorkout(\'B\')">' +
+        '<span class="station-badge station-badge-lg">B</span>' +
+        '<div><div class="dash-workout-label">Treino B</div><div class="dash-workout-sub">' + distB + ' treinos realizados</div></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="dash-grid">' +
+      '<div class="dash-card"><div class="dash-card-title">Ultimo treino</div><div class="dash-card-value">' + lastText + '</div></div>' +
+      '<div class="dash-card"><div class="dash-card-title">Total de treinos</div><div class="dash-card-value">' + total + '</div></div>' +
+      '<div class="dash-card"><div class="dash-card-title">Sequencia atual</div><div class="dash-card-value">' + (streak > 0 ? "\uD83D\uDD25 " : "") + streak + '</div><div class="dash-card-sub">' + (streak === 1 ? "dia" : "dias") + ' seguidos</div></div>' +
+      '<div class="dash-card"><div class="dash-card-title">Distribuicao</div>' +
+        '<div class="dash-dist"><div class="dash-dist-row"><span>Treino A</span><span>' + distA + '</span></div><div class="dash-dist-row"><span>Treino B</span><span>' + distB + '</span></div></div>' +
+        '<div class="dash-bar"><div class="dash-bar-a" style="width:' + pctA + '%"></div><div class="dash-bar-b" style="width:' + pctB + '%"></div></div>' +
+      '</div>' +
+      '<div class="dash-card"><div class="dash-card-title">Ultimos 7 dias</div><div class="dash-week">' + weekDays + '</div></div>' +
+      '<button class="btn-export" onclick="exportHistory()">Exportar historico (CSV)</button>' +
+    '</div>';
+}
+
+function exportHistory() {
+  var log = JSON.parse(localStorage.getItem("treino_log") || "[]");
+  if (log.length === 0) return;
+  var csv = "date,type,completedAt\n" + log.map(function(e) { return e.date + "," + e.type + "," + e.completedAt; }).join("\n");
+  var blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url; a.download = "treino_log.csv";
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+renderWorkout("A");
+renderWorkout("B");
+bindButtons("A");
+bindButtons("B");
+setupPersistence("A");
+setupPersistence("B");
+showDashboard();
+</script>
 </body>
-
 </html>
