@@ -347,7 +347,7 @@ function logWorkout(key) {
   var log = JSON.parse(localStorage.getItem("treino_log") || "[]");
   var today = new Date().toISOString().slice(0, 10);
   var entry = { date: today, type: key, completedAt: new Date().toISOString() };
-  var idx = log.findIndex(function(e) { return e.date === today; });
+  var idx = log.findIndex(function(e) { return e.date === today && e.type === key; });
   if (idx >= 0) log[idx] = entry; else log.push(entry);
   localStorage.setItem("treino_log", JSON.stringify(log));
 }
