@@ -329,16 +329,15 @@ Chamada no INIT após `renderWorkout()` e `bindButtons()`.
 
 ## **Histórico**
 
-Se for implementado:
+Implementação planejada — ver [PLAN.md](PLAN.md).
 
 Registrar:
 
 - data
-- exercício
-- carga
-- observações
+- tipo do treino (A/B)
+- timestamp de conclusão
 
-Persistência local.
+Persistência local via `localStorage` (chave `treino_log`).
 
 ---
 
@@ -395,3 +394,5 @@ Transformar o arquivo HTML em um treinador pessoal simples para Android, mantend
 - robustez
 - funcionamento offline
 - facilidade de edição por IA e humanos
+
+Ver o [PLAN.md](PLAN.md) para o roadmap detalhado de evolução.
