@@ -31,12 +31,24 @@
       margin: 0;
     }
 
-    h1 {
+    /* ===== HEADER / LOGO ===== */
+
+    .header {
       text-align: center;
-      font-size: 1.8em;
-      font-weight: 700;
-      margin: 8px 0 12px 0;
-      letter-spacing: 0.02em;
+      padding: 4px 0 2px 0;
+    }
+
+    #logo {
+      width: 48px;
+      height: 48px;
+      transition: width 0.3s ease, height 0.3s ease, transform 0.3s ease;
+      border-radius: 12px;
+      display: inline-block;
+    }
+
+    .header--dash #logo {
+      width: 72px;
+      height: 72px;
     }
 
     /* ===== TABS ===== */
@@ -464,7 +476,9 @@
 
 <body>
 
-  <h1>🏋️ Treino</h1>
+  <div id="header" class="header">
+    <img src="image.png" alt="Treino" id="logo">
+  </div>
 
   <div class="tab-bar">
     <button class="tab-btn" data-screen="workout" data-workout="A">Treino A</button>
@@ -821,6 +835,9 @@
       // Hide dashboard
       document.getElementById("screen-dashboard").classList.remove("visible");
 
+      // Logo: compact on workout pages
+      document.getElementById("header").classList.remove("header--dash");
+
       // Remember preference
       localStorage.setItem("treino_selected", key);
     }
@@ -833,6 +850,9 @@
 
       // Hide all workouts
       document.querySelectorAll(".workout").forEach(c => c.classList.remove("visible"));
+
+      // Logo: expanded on dashboard
+      document.getElementById("header").classList.add("header--dash");
 
       // Show and render dashboard
       const dash = document.getElementById("screen-dashboard");
