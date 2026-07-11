@@ -19,14 +19,7 @@ Arquivo principal:
 
 ### **Estrutura de treinos**
 
-O aplicativo contém dois treinos independentes:
-
-- **Treino A**
-- **Treino B**
-
-Cada treino possui seus próprios exercícios, cronômetros e persistência independente.
-
-A alternância entre treinos é feita por abas no topo da página e preserva o estado do DOM (cronômetros e botões não são recriados).
+O aplicativo contém um **único treino** com 10 exercícios combinados.
 
 ---
 
@@ -244,43 +237,6 @@ Quando o usuário clica em "✔ Descanso" para uma série:
 
 ---
 
-## **Alternância entre Treinos**
-
-### **Renderização inicial**
-
-Ambos os treinos são renderizados no DOM durante o `init`:
-
-```
-renderWorkout("A");
-renderWorkout("B");
-```
-
-Cada treino fica em um container `<div class="workout" id="workoutA">` / `<div class="workout" id="workoutB">`.
-
-### **Mecanismo de exibição**
-
-- Ambos os containers existem no DOM desde o carregamento inicial.
-- A classe CSS `.workout` define `display: none`.
-- A classe `.workout.visible` define `display: block`.
-- Alternar entre treinos é puramente uma troca de classes CSS → **sem recriação de elementos**.
-- Cronômetros e estado dos botões são preservados durante a alternância.
-
-### **Abas**
-
-Dois botões `.tab-btn` no topo, com atributo `data-workout="A"` e `data-workout="B"`.
-O botão ativo recebe a classe `.tab-btn.active`.
-
-Função `switchWorkout(key)`:
-1. Atualiza classe `active` nos botões de aba
-2. Alterna classe `visible` nos containers `.workout`
-3. Salva preferência em `localStorage` (`treino_selected`)
-
-### **Restauração**
-
-No `init`, após renderizar e configurar ambos os treinos, o último treino selecionado é restaurado do `localStorage` (padrão: `"A"`).
-
----
-
 ## **Persistência**
 
 Implementada via `localStorage`.
@@ -289,29 +245,24 @@ Os campos `contenteditable` (reps, carga, observações) são salvos automaticam
 
 ### **Chaves**
 
-Cada campo usa a chave `treino{tipo}_{campo}_{indice}`, onde:
+Cada campo usa a chave `treino_{campo}_{indice}`, onde:
 
-- `{tipo}` = `A` ou `B` (treino)
 - `{campo}` = `reps`, `load` ou `obs`
 - `{indice}` = posição do exercício no array (0-based)
 
 Exemplo:
 
 ```
-treinoA_reps_0   → reps do 1º exercício do Treino A (Mobilidade)
-treinoB_load_2   → carga do 3º exercício do Treino B (Remada)
-treinoA_obs_4    → observações do 5º exercício do Treino A
+treino_reps_0   → reps do 1º exercício (Mobilidade)
+treino_load_3   → carga do 4º exercício (Flexão)
+treino_obs_9    → observações do 10º exercício (Hanging Knee Raise)
 ```
-
-### **Preferência de treino**
-
-O treino selecionado é salvo na chave `treino_selected` (valor `"A"` ou `"B"`) e restaurado ao carregar a página.
 
 ### **Função responsável**
 
-`setupPersistence(key)` em `serie-2026.html`, chamada uma vez para cada treino:
+`setupPersistence()` em `serie-2026.html`, chamada uma vez no `init`:
 
-1. Localiza o container `#workout{key}`
+1. Localiza o container `#workout`
 2. Itera todos os `.exercise` dentro dele
 3. Localiza os spans `[contenteditable]` e a div `.obs[contenteditable]`
 4. Restaura valores salvos do `localStorage` (se existirem)
@@ -329,21 +280,15 @@ Chamada no INIT após `renderWorkout()` e `bindButtons()`.
 
 ## **Histórico**
 
-Implementado via `treino_log` no `localStorage`. Registrado automaticamente ao concluir todas as séries de um treino.
+Implementado via `treino_log` no `localStorage`. Registrado automaticamente ao concluir todas as séries do treino.
 
 Registrar:
 
 - data (`date`)
-- tipo do treino (`type`: A/B)
+- tipo do treino (`type`: sempre "A" por ser treino único)
 - timestamp de conclusão (`completedAt`)
 
 Estrutura: `{ date, type, completedAt }` em array JSON.
-
----
-
-## **Alternância Inteligente**
-
-O app sempre abre no **Dashboard**. Ao clicar em "Treino A" ou "Treino B", o respectivo treino é exibido. Não há sugestão automática — o usuário escolhe qual treino fazer.
 
 ---
 
@@ -352,43 +297,18 @@ O app sempre abre no **Dashboard**. Ao clicar em "Treino A" ou "Treino B", o res
 O treino pode ser concluído de duas formas:
 
 1. **Automática**: quando todas as 3 séries de todos os exercícios com cronômetro são marcadas como Feito.
-2. **Manual**: botão "✅ Concluir treino" no final de cada treino — útil para registrar a conclusão mesmo que a mobilidade ou séries opcionais não tenham sido feitas.
+2. **Manual**: botão "Concluir treino" no final — útil para registrar a conclusão mesmo que a mobilidade ou séries opcionais não tenham sido feitas.
 
 Em ambos os casos:
 
-- Banner verde "Treino A/B concluído! 🎉" aparece no rodapé
-- Após 2 segundos, o banner desaparece e o **Dashboard** é aberto automaticamente
-
----
-
-## **Dashboard**
-
-Aba "Dashboard" na barra de navegação, ao lado de Treino A / Treino B.
-
-### **Cartões**
-
-| Cartão | Descrição |
-|--------|-----------|
-| Último treino | Tipo + data formatada |
-| Total de treinos | Contagem total de sessões |
-| Sequência atual | Dias consecutivos (streak) |
-| Distribuição A/B | Quantos treinos de cada tipo |
-| Últimos 7 dias | Bolinhas ✔ (treinou) / ✗ (não treinou) |
-
-### **Funções**
-
-- `showDashboard()` — ativa a tela e chama `renderDashboard()`
-- `renderDashboard()` — lê `treino_log`, calcula métricas e preenche o container
+- Banner verde "Treino concluído! 🎉" aparece no rodapé
+- Após 3 segundos, o banner desaparece
 
 ---
 
 ## **Exportação**
 
-Implementado via botão "📥 Exportar histórico (CSV)" no Dashboard. Gera download CSV com colunas `date,type,completedAt`.
-
-Formato futuro:
-
-- JSON
+Botão "📥 Exportar histórico (CSV)" disponível no final do treino (export via `exportHistory()`). Gera download CSV com colunas `date,type,completedAt`.
 
 ---
 
@@ -434,7 +354,6 @@ Mudanças em timers devem ser tratadas como alterações de alto risco.
 --muted: #94a3b8;     /* texto secundário */
 --neg: #ef4444;       /* negativo/erro */
 --tab: #1e293b;       /* aba inativa */
---tab-active: #22c55e;/* aba ativa / ação */
 --accent: #f59e0b;    /* destaque (streak) */
 --border: #1e293b;    /* borda de cartões */
 ```
@@ -448,8 +367,10 @@ Mudanças em timers devem ser tratadas como alterações de alto risco.
 | Mobilidade | Lista com chips `#020617` e bullet `○` |
 | Timer | Fundo `#020617` separado, `font-size: 3em` |
 | Botões | `box-shadow` + `:active` com `scale(0.96)` |
-| Dashboard | Barra de distribuição proporcional verde/azul |
-| Transições | `fadeIn` (opacity + translateY) em telas e banner |
+| Histórico | Exportação CSV ao final da página |
+| Transições | `fadeIn` (opacity + translateY) no banner |
+
+---
 
 ## **Objetivo de Longo Prazo**
 
