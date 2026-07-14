@@ -147,6 +147,11 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .timer-circle-fg {
   fill: none; stroke: #ef4444; stroke-width: 8; stroke-linecap: round;
   transition: stroke 0.3s var(--ease);
+.timer-circle.warn { animation: circlePulse 2s var(--ease) infinite; }
+@keyframes circlePulse {
+  0%, 100% { transform: rotate(-90deg) scale(1); }
+  50% { transform: rotate(-90deg) scale(1.04); }
+}
 }
 .timer-text {
   position: absolute; font-family: 'BBH Hegarty', sans-serif;
@@ -310,8 +315,8 @@ function openTimerModal(totalSec, doneCallback) {
   modal.classList.remove("hiding");
   void modal.offsetWidth;
   modal.classList.add("show");
-  timerText.classList.remove("blink");
-  timerCircle.classList.remove("blink");
+  timerText.classList.remove("blink", "warn");
+  timerCircle.classList.remove("blink", "warn");
   btnPause.textContent = "Pausar";
   timerDoneCallback = doneCallback;
 
@@ -352,7 +357,7 @@ function runMainTimer() {
   timerState.remainingMs = timerState.total * 1000;
   timerState.paused = false;
   timerText.classList.remove("blink");
-  timerCircle.classList.remove("blink");
+  timerCircle.classList.remove("blink", "warn");
   btnPause.textContent = "Pausar";
   tick();
 }
@@ -379,6 +384,8 @@ function tick() {
   var g = Math.round(68 * t + 189 * (1 - t));
   var b = Math.round(68 * t + 248 * (1 - t));
   timerCircle.style.stroke = "rgb(" + r + "," + g + "," + b + ")";
+  if (secs <= 10) timerCircle.classList.add("warn");
+  else timerCircle.classList.remove("warn");
   timerText.style.color = "";
   timerText.textContent = formatSec(secs);
   requestAnimationFrame(function() { setTimeout(tick, 100); });
@@ -416,7 +423,7 @@ btnPause.addEventListener("click", function() {
 document.getElementById("btn-restart").addEventListener("click", function() {
   if (!timerState) return;
   timerText.classList.remove("blink");
-  timerCircle.classList.remove("blink");
+  timerCircle.classList.remove("blink", "warn");
   runMainTimer();
 });
 
