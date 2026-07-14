@@ -143,10 +143,9 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 6;
 }
 .timer-circle-fg {
-  fill: none; stroke: #ef4444; stroke-width: 6; stroke-linecap: round;
-  transition: stroke 0.6s var(--ease);
+  fill: none; stroke: #ef4444; stroke-width: 8; stroke-linecap: round;
+  transition: stroke 0.3s var(--ease);
 }
-.timer-circle-fg.blue { stroke: #38bdf8; }
 .timer-text {
   position: absolute; font-family: 'BBH Hegarty', sans-serif;
   font-size: 3.8em; font-weight: 400; color: #ffffff;
@@ -167,9 +166,9 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   font-family: inherit; font-weight: 600; font-size: 0.85em;
   color: black; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.25);
 }
-.timer-btn-pause { background: #f59e0b; }
+.timer-btn-pause { background: #94a3b8; color: #fff; }
 .timer-btn-restart { background: #64748b; color: #fff; }
-.timer-btn-finish { background: #ef4444; color: #fff; }
+.timer-btn-finish { background: #22c55e; color: #000; }
 .timer-buttons button:active { transform: scale(0.95); }
 
 /* ===== CELEBRATION ===== */
@@ -309,7 +308,6 @@ let timerDoneCallback = null;
 
 function openTimerModal(totalSec, doneCallback) {
   modal.classList.add("show");
-  timerCircle.classList.remove("blue");
   timerText.classList.remove("blink");
   btnPause.textContent = "Pausar";
   timerDoneCallback = doneCallback;
@@ -318,12 +316,16 @@ function openTimerModal(totalSec, doneCallback) {
 
   var wrap = document.querySelector(".timer-circle-wrap");
   timerText.style.display = "none";
+  timerCircle.style.opacity = "0";
+  timerCircle.style.opacity = "0";
   timerCircle.setAttribute("stroke-dashoffset", "0");
   timerCircle.style.stroke = "#ef4444";
 
   function showCount(n) {
     if (n <= 0) {
       timerText.style.display = "";
+      timerCircle.style.transition = "opacity 0.3s var(--ease)";
+      timerCircle.style.opacity = "1";
       runMainTimer();
       return;
     }
@@ -353,13 +355,25 @@ function tick() {
   if (!timerState || timerState.paused) return;
   var elapsed = Date.now() - timerState.startMs;
   var rem = timerState.remainingMs - elapsed;
-  if (rem <= 0) { closeModal(true); return; }
   var secs = rem / 1000;
-  var frac = secs / timerState.total;
+  var total = timerState.total;
+  if (rem <= 0) {
+    timerText.textContent = format(secs);
+    timerText.style.color = "var(--neg)";
+    timerText.classList.add("blink");
+    timerCircle.classList.add("blink");
+    requestAnimationFrame(function() { setTimeout(tick, 50); });
+    return;
+  }
+  var frac = secs / total;
   var off = CIRC * (1 - frac);
   timerCircle.setAttribute("stroke-dashoffset", String(off));
-  if (frac < 0.25) timerCircle.classList.add("blue");
-  else timerCircle.classList.remove("blue");
+  var t = Math.max(0, Math.min(1, frac));
+  var r = Math.round(239 * t + 56 * (1 - t));
+  var g = Math.round(68 * t + 189 * (1 - t));
+  var b = Math.round(68 * t + 248 * (1 - t));
+  timerCircle.style.stroke = "rgb(" + r + "," + g + "," + b + ")";
+  timerText.style.color = "";
   timerText.textContent = format(Math.ceil(secs));
   requestAnimationFrame(function() { setTimeout(tick, 100); });
 }
