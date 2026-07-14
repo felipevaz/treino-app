@@ -103,11 +103,11 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ===== REST LINE ===== */
 .rest-line {
-  position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 90;
-  background: #38bdf8; transform: scaleX(0); transform-origin: right center;
-  transition: none; opacity: 0;
+  position: fixed; top: 0; left: 0; width: 0%; height: 3px; z-index: 90;
+  background: #38bdf8; opacity: 0;
+  transition: none;
 }
-.rest-line.active { opacity: 1; transform: scaleX(1); transform-origin: left center; }
+.rest-line.active { opacity: 1; width: 100%; }
 .rest-line.warn { background: #ef4444; animation: lineBlink 0.5s infinite; }
 @keyframes lineBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 
@@ -298,12 +298,14 @@ const btnPause = document.getElementById("btn-pause");
 const CIRC = 2 * Math.PI * 110; // ~691.15
 
 let timerState = null;
+let timerDoneCallback = null;
 
-function openTimerModal(totalSec) {
+function openTimerModal(totalSec, doneCallback) {
   modal.classList.add("show");
   timerCircle.classList.remove("blue");
   timerText.classList.remove("blink");
   btnPause.textContent = "Pausar";
+  timerDoneCallback = doneCallback;
 
   timerState = { total: totalSec, paused: false, startMs: 0, remainingMs: totalSec * 1000 };
 
@@ -356,8 +358,10 @@ function tick() {
 
 function closeModal(auto) {
   modal.classList.remove("show");
+  var cb = timerDoneCallback;
   timerState = null;
-  clearTimeout(timerState && timerState._blinkTimer);
+  timerDoneCallback = null;
+  if (auto && cb) cb();
 }
 
 /* --- Modal buttons --- */
@@ -395,14 +399,12 @@ var restTimer = null;
 function showRestLine(seconds) {
   clearInterval(restTimer);
   restLine.style.transition = "none";
-  restLine.style.transform = "scaleX(1)";
-  restLine.style.transformOrigin = "left center";
+  restLine.style.width = "100%";
   restLine.classList.add("active");
   restLine.classList.remove("warn");
   void restLine.offsetWidth;
-  restLine.style.transition = "transform " + seconds + "s linear";
-  restLine.style.transform = "scaleX(0)";
-  restLine.style.transformOrigin = "right center";
+  restLine.style.transition = "width " + seconds + "s linear";
+  restLine.style.width = "0%";
 
   var t = seconds;
   restTimer = setInterval(function() {
@@ -439,10 +441,11 @@ function renderWorkout() {
 
     var seriesHTML = "";
     if (!ex.mobility) {
-      seriesHTML =
-        '<div class="button-row"><button class="start">Serie 1</button><button class="finish">Descanso</button></div>' +
-        '<div class="button-row"><button class="start">Serie 2</button><button class="finish">Descanso</button></div>' +
-        '<div class="button-row"><button class="start">Serie 3</button><button class="finish">Descanso</button></div>';
+      seriesHTML = '<div class="grid">' +
+        '<div class="button-row"><button class="start">Serie 1</button></div>' +
+        '<div class="button-row"><button class="start">Serie 2</button></div>' +
+        '<div class="button-row"><button class="start">Serie 3</button></div>' +
+        '</div>';
     }
 
     div.innerHTML =
@@ -469,24 +472,18 @@ function bindButtons() {
   container.querySelectorAll(".exercise").forEach(function(box, i) {
     if (exercises[i].mobility) return;
     var starts = box.querySelectorAll(".start");
-    var finishes = box.querySelectorAll(".finish");
 
-    starts.forEach(function(btn) {
+    starts.forEach(function(btn, idx) {
       btn.addEventListener("click", function() {
-        openTimerModal(exercises[i].time);
-      });
-    });
-
-    finishes.forEach(function(btn, idx) {
-      btn.addEventListener("click", function() {
-        var startBtn = starts[idx];
-        startBtn.disabled = true;
-        startBtn.classList.add("done");
-        startBtn.textContent = "Feito";
-        showRestLine(exercises[i].rest);
-        var allStarts = container.querySelectorAll(".start");
-        var allDone = Array.from(allStarts).every(function(b) { return b.disabled; });
-        if (allDone) completeWorkout();
+        openTimerModal(exercises[i].time, function() {
+          btn.disabled = true;
+          btn.classList.add("done");
+          btn.textContent = "Feito";
+          showRestLine(exercises[i].rest);
+          var allStarts = container.querySelectorAll(".start");
+          var allDone = Array.from(allStarts).every(function(b) { return b.disabled; });
+          if (allDone) completeWorkout();
+        });
       });
     });
   });
