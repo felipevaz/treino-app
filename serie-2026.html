@@ -35,19 +35,19 @@
       -webkit-font-smoothing: antialiased;
       scroll-behavior: smooth;
     }
-    .header { text-align: center; padding: 8px 0 4px 0; }
+    .header { text-align: center; padding: 12px 0 2px 0; }
     .header-logo {
       width: 100px; height: auto;
-      display: block; margin: 0 auto 4px;
+      display: block; margin: 0 auto 12px;
       border-radius: 12px;
     }
     .header-title {
       font-family: 'BBH Hegarty', sans-serif;
       font-weight: 400;
-      font-size: 1.5em;
+      font-size: 2em;
       color: #ffffff;
-      letter-spacing: 0.02em;
-      line-height: 1.1;
+      letter-spacing: 0.01em;
+      line-height: 1;
     }
 
     .exercise {
@@ -112,9 +112,10 @@
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
     .timer {
-      font-size: 3em; font-weight: 700; text-align: center; padding: 12px 0;
+      font-family: 'BBH Hegarty', sans-serif;
+      font-size: 3em; font-weight: 400; text-align: center; padding: 12px 0;
       margin-bottom: 10px; background: #020617; border-radius: 12px;
-      letter-spacing: 0.05em; color: var(--muted);
+      letter-spacing: -0.02em; color: var(--muted);
       transition: color 0.3s var(--ease), transform 0.2s var(--ease), box-shadow 0.3s var(--ease);
     }
     .timer-start { animation: timerPulse 0.45s var(--ease); }
@@ -235,7 +236,7 @@
 
 <div id="header" class="header">
   <img src="grenz-fit-mascot-transparent.png" alt="Grenz FIT" class="header-logo">
-  <div class="header-title">Grenz FIT</div>
+  <div class="header-title">GrenzFIT</div>
 </div>
 
 <div id="app"></div>
