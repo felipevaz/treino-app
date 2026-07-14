@@ -128,6 +128,8 @@ O treino curto usa um temporizador próprio dentro do painel do circuito. Ele co
 
 O temporizador do circuito não deve depender do modal do treino longo.
 
+Antes de iniciar, o painel do circuito mostra apenas o texto da próxima fase, alinhado à esquerda, sem destacar o relógio. Ao iniciar, o painel vira um modal em tela cheia, com a descrição da rodada, o círculo de progresso, os algarismos do tempo e o nome do exercício centralizados.
+
 Requisitos:
 
 - botão ativo deve piscar
@@ -162,9 +164,11 @@ A Home é a tela inicial e pode ser aberta a qualquer momento pelo botão de cas
 
 A navegação principal deve mostrar apenas:
 
+- botão de casinha para voltar à Home;
 - Treino curto
 - Treino longo
-- botão de casinha para voltar à Home
+
+O botão de casinha deve ser a primeira opção à esquerda.
 
 ### **Fonte**
 

@@ -8,7 +8,7 @@ O produto continua sendo um arquivo HTML único, offline, sem backend e sem fram
 
 ## Estado atual
 
-- Home é a tela inicial e mostra os indicadores de treino.
+- Home é a tela inicial, fica como primeira opção à esquerda no menu e mostra os indicadores de treino.
 - Há dois modos: `Treino curto` e `Treino longo`.
 - O treino curto tem 6 exercícios, incluindo mobilidade e Suitcase Carry, e é executado como circuito intervalado.
 - O treino longo tem 9 exercícios, incluindo mobilidade, pernas, empurrar, puxar, hinge e core.
@@ -27,7 +27,7 @@ O cronômetro modal do treino longo deve ser preservado. A interface exibe algar
 
 A lógica do modal e o DOM dos treinos são áreas de alto risco. Mudanças de tela devem apenas alternar visibilidade; não recriar cards enquanto houver timer ativo.
 
-O treino curto usa um temporizador de circuito separado, exibido no próprio painel do treino curto. Ele avança automaticamente entre trabalho e transição, mas mantém os mesmos algarismos simples para leitura rápida no celular.
+O treino curto usa um temporizador de circuito separado. Antes de iniciar, o painel mostra apenas o texto da próxima rodada; ao iniciar, ele vira um modal com círculo de progresso e algarismos grandes entre a descrição da rodada e o exercício atual. Ele avança automaticamente entre trabalho e transição, mas mantém os mesmos algarismos simples para leitura rápida no celular.
 
 ## Modos de treino
 
@@ -43,7 +43,7 @@ O aplicativo não decide automaticamente a intensidade da pedalada. A escolha do
 
 ## Home
 
-A Home deve permanecer disponível como tela inicial e ser acessível pelo botão de casinha durante o uso. Ela lê o `treino_log` ao ser exibida e apresenta:
+A Home deve permanecer disponível como tela inicial e ser acessível pelo botão de casinha, que fica à esquerda no menu principal. Ela lê o `treino_log` ao ser exibida e apresenta:
 
 - total de treinos;
 - último modo concluído;
