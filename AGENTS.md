@@ -21,6 +21,9 @@ Arquivo principal:
 
 O aplicativo contém dois modos do mesmo programa: **treino curto** e **treino longo**. O curto é usado em dias de pedalada forte ou menor disponibilidade; o longo é a sessão completa.
 
+- **Treino curto**: circuito intervalado, com 2 rodadas de 30 segundos de trabalho e 30 segundos de transição.
+- **Treino longo**: treino tradicional por séries, com 3 séries de 40 segundos por exercício normal.
+
 ---
 
 ## **Filosofia**
@@ -96,23 +99,34 @@ Preferir:
 
 ## **Cronômetros**
 
-Existem dois tipos de contagem:
+Existem três tipos de contagem:
 
-### **Série**
+### **Série no treino longo**
 
 Iniciada ao clicar:
 
 ```
-▶ Série N
+Série N
 ```
 
-### **Descanso**
+### **Descanso visual no treino longo**
 
 Disparado ao finalizar a série no modal:
 
 ```
 Finalizar
 ```
+
+### **Circuito no treino curto**
+
+O treino curto usa um temporizador próprio dentro do painel do circuito. Ele controla:
+
+- trabalho;
+- transição;
+- rodada atual;
+- avanço automático para a próxima fase.
+
+O temporizador do circuito não deve depender do modal do treino longo.
 
 Requisitos:
 
@@ -136,15 +150,21 @@ Nunca:
 
 ### **Decisão sobre o formato**
 
-O formato numérico atual deve ser mantido. Os treinos usam 40 segundos de série e 30 segundos de descanso; mesmo 90 segundos continua aceitável nesse formato. Só revisar essa decisão se o programa passar a exigir durações maiores.
+O formato numérico atual deve ser mantido. O treino longo usa 40 segundos de série e 30 segundos de descanso. O treino curto usa 30 segundos de trabalho e 30 segundos de transição. Mesmo 90 segundos continua aceitável nesse formato. Só revisar essa decisão se o programa passar a exigir durações maiores.
 
 ---
 
 ## **Layout**
 
-### **Dashboard**
+### **Home**
 
-O Dashboard é a tela inicial e pode ser aberto a qualquer momento. Ele mostra o total de treinos, o último modo concluído, os últimos sete dias, a distribuição entre curto e longo e o botão de exportação CSV. Ele deve permanecer separado dos containers de treino para não interferir nos cronômetros.
+A Home é a tela inicial e pode ser aberta a qualquer momento pelo botão de casinha. Ela mostra o total de treinos, o último modo concluído, os últimos sete dias, a distribuição entre curto e longo e o botão de exportação CSV. Ela deve permanecer separada dos containers de treino para não interferir nos cronômetros.
+
+A navegação principal deve mostrar apenas:
+
+- Treino curto
+- Treino longo
+- botão de casinha para voltar à Home
 
 ### **Fonte**
 
@@ -196,7 +216,9 @@ São exibidos apenas como lista.
 
 ### **Exercícios normais**
 
-Possuem:
+No treino curto, os exercícios normais são exibidos como referência editável e executados pelo painel de circuito. Eles não possuem botões individuais de série.
+
+No treino longo, possuem:
 
 - cronômetro em modal
 - 3 séries
@@ -204,7 +226,7 @@ Possuem:
 
 O botão `Finalizar` do modal encerra a série, dispara o descanso visual e marca a série como concluída. Os botões de série devem possuir largura uniforme.
 
-### **Botão de série concluída (.done)**
+### **Botão de série concluída (.done) no treino longo**
 
 Quando o usuário finaliza uma série no modal:
 
@@ -249,7 +271,7 @@ treino_longo_obs_7    → observações do 8º exercício longo (Hanging Knee Ra
 4. Restaura valores salvos do `localStorage` (se existirem)
 5. Registra `input` listener para salvar alterações
 
-Chamada no INIT após `renderWorkout(modo)` e `bindButtons(modo)`.
+Chamada no INIT após `renderWorkout(modo)` e `bindButtons(modo)`. O treino curto também chama `bindCircuit("curto")` após renderizar os containers.
 
 ### **Observações**
 
@@ -261,7 +283,7 @@ Chamada no INIT após `renderWorkout(modo)` e `bindButtons(modo)`.
 
 ## **Histórico**
 
-Implementado via `treino_log` no `localStorage`. Registrado automaticamente ao concluir todas as séries do treino.
+Implementado via `treino_log` no `localStorage`. Registrado automaticamente ao concluir todas as séries do treino longo ou ao terminar o circuito curto.
 
 Registrar:
 
@@ -277,7 +299,7 @@ Estrutura: `{ date, type, completedAt }` em array JSON. Registros legados `A` s�
 
 O treino pode ser concluído de duas formas:
 
-1. **Automática**: quando todas as 3 séries de todos os exercícios com cronômetro são marcadas como Feito.
+1. **Automática**: quando todas as 3 séries de todos os exercícios com cronômetro são marcadas como Feito no treino longo, ou quando o circuito curto termina.
 2. **Manual**: botão "Concluir treino" no final — útil para registrar a conclusão mesmo que a mobilidade ou séries opcionais não tenham sido feitas.
 
 Em ambos os casos:
@@ -289,7 +311,7 @@ Em ambos os casos:
 
 ## **Exportação**
 
-Botão "Exportar histórico (CSV)" disponível no Dashboard (export via `exportHistory()`). Gera download CSV com colunas `date,type,completedAt`.
+Botão "Exportar histórico (CSV)" disponível na Home (export via `exportHistory()`). Gera download CSV com colunas `date,type,completedAt`.
 
 ---
 

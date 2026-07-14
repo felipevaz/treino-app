@@ -6,6 +6,8 @@ Este arquivo é o registro humano para revisão periódica. O aplicativo em `ser
 
 Usar em dias de pedalada mais forte, pernas cansadas ou pouco tempo. A sessão preserva estímulo de mobilidade, parte superior e core sem exigir o bloco completo de pernas.
 
+Formato atual no aplicativo: circuito intervalado, com 2 rodadas de 30 segundos de trabalho e 30 segundos de transição. A mobilidade vem antes do circuito e não entra no temporizador.
+
 | Ordem | Exercício | Repetições | Carga | Papel |
 |---:|---|---|---|---|
 | 1 | Mobilidade | Sequência | 0 kg | preparação |
@@ -33,10 +35,11 @@ Usar em dias de melhor recuperação. Inclui o treino curto ampliado com pernas,
 
 ## Regras de execução
 
-- Exercícios normais usam 3 séries de 40 segundos, com 30 segundos de descanso visual.
+- Treino curto usa circuito de 2 rodadas, 30 segundos de trabalho e 30 segundos de transição.
+- Treino longo usa 3 séries de 40 segundos por exercício, com 30 segundos de descanso visual.
 - Hanging Knee Raise deve ser controlado, sem balanço, com retroversão leve da pelve no topo.
 - Suitcase Carry: postura ereta, costelas controladas, sem inclinar o tronco para o lado da carga.
-- Pallof Press e Suitcase Carry são complementares; não é necessário usar ambos em todo treino curto.
+- Pallof Press e Suitcase Carry são complementares; no circuito curto, ambos aparecem, mas a intensidade deve ser ajustada pela técnica.
 - Em pedalada forte, escolher o curto. Em pedalada leve ou recuperação boa, escolher o longo.
 
 ## Fora do treino principal

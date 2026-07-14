@@ -124,6 +124,32 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 }
 .finish-workout:active { transform: scale(0.97); }
 
+/* ===== CIRCUIT ===== */
+.circuit-panel {
+  background: #020617; border: 1px solid var(--border); border-radius: 14px;
+  padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow);
+}
+.circuit-kicker { color: var(--muted); font-size: 0.85em; margin-bottom: 4px; }
+.circuit-title { font-size: 1.35em; font-weight: 700; margin-bottom: 4px; }
+.circuit-meta { color: var(--muted); font-size: 0.9em; margin-bottom: 12px; }
+.circuit-display {
+  display: grid; grid-template-columns: 92px 1fr; gap: 14px; align-items: center;
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 12px; margin-bottom: 12px;
+}
+.circuit-time {
+  font-family: 'BBH Hegarty', sans-serif; font-size: 3.1em; line-height: 1;
+  color: #38bdf8; text-align: center;
+}
+.circuit-time.warn { color: var(--neg); animation: blinkPulse 0.7s infinite; }
+.circuit-phase { font-size: 0.85em; color: var(--accent); font-weight: 700; margin-bottom: 3px; }
+.circuit-current { font-size: 1.1em; font-weight: 700; margin-bottom: 3px; }
+.circuit-next { font-size: 0.85em; color: var(--muted); }
+.circuit-actions { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px; }
+.circuit-start { background: #22c55e; }
+.circuit-next-btn { background: #38bdf8; }
+.circuit-reset { background: #94a3b8; color: #020617; }
+
 /* ===== TIMER MODAL ===== */
 .timer-modal {
   position: fixed; inset: 0; z-index: 200;
@@ -227,6 +253,10 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   background: var(--tab); color: var(--muted); font-family: inherit; font-size: 0.95em; font-weight: 700;
 }
 .tab-btn.active { background: #22c55e; color: #020617; }
+.home-btn {
+  flex: 0 0 46px; min-width: 46px; font-size: 1.05em;
+  display: inline-grid; place-items: center;
+}
 .dashboard { display: none; animation: fadeIn 0.35s var(--ease); }
 .dashboard.visible { display: block; }
 .dash-card {
@@ -271,7 +301,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 <nav class="tab-bar" aria-label="Navegação principal">
   <button class="tab-btn" data-view="workout" data-mode="curto">Treino curto</button>
   <button class="tab-btn" data-view="workout" data-mode="longo">Treino longo</button>
-  <button class="tab-btn active" data-view="dashboard">Dashboard</button>
+  <button class="tab-btn home-btn active" data-view="dashboard" aria-label="Home" title="Home">⌂</button>
 </nav>
 
 <div id="rest-line" class="rest-line"></div>
@@ -312,24 +342,29 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* ===== DATA ===== */
 const workouts = {
   curto: [
-    { name:"Mobilidade", reps:"Sequencia", load:"0 kg", mobility:true, list:["Floppy arm - 10","Cat/cow - 10","Best stretch - 10"] },
-    { name:"Pallof Press", reps:"10-12 / lado", load:"elastico", time:40, rest:30 },
-    { name:"Flexao de braco", reps:"8-12", load:"peso corporal", time:40, rest:30 },
+    { name:"Mobilidade", reps:"Sequência", load:"0 kg", mobility:true, list:["Floppy arm - 10","Cat/cow - 10","Best stretch - 10"] },
+    { name:"Pallof Press", reps:"10-12 / lado", load:"elástico", time:40, rest:30 },
+    { name:"Flexão de braço", reps:"8-12", load:"peso corporal", time:40, rest:30 },
     { name:"Barra fixa", reps:"4 / 3 / 2", load:"peso corporal", time:40, rest:30 },
     { name:"Hanging Knee Raise", reps:"8-12", load:"peso corporal", time:40, rest:30 },
     { name:"Suitcase Carry", reps:"30-45 s / lado", load:"kettlebell", time:40, rest:30 }
   ],
   longo: [
-    { name:"Mobilidade", reps:"Sequencia", load:"0 kg", mobility:true, list:["Floppy arm - 10","Cat/cow - 10","Best stretch - 10"] },
-    { name:"Pallof Press", reps:"10-12 / lado", load:"elastico", time:40, rest:30 },
+    { name:"Mobilidade", reps:"Sequência", load:"0 kg", mobility:true, list:["Floppy arm - 10","Cat/cow - 10","Best stretch - 10"] },
+    { name:"Pallof Press", reps:"10-12 / lado", load:"elástico", time:40, rest:30 },
     { name:"Agachamento unilateral", reps:"12", load:"5 kg", time:40, rest:30 },
-    { name:"Flexao de braco", reps:"8-12", load:"peso corporal", time:40, rest:30 },
+    { name:"Flexão de braço", reps:"8-12", load:"peso corporal", time:40, rest:30 },
     { name:"Barra fixa", reps:"4 / 3 / 2", load:"peso corporal", time:40, rest:30 },
     { name:"Remada", reps:"10-12", load:"kettlebell 12 kg", time:40, rest:30 },
     { name:"Levantamento terra KB", reps:"12", load:"15 kg", time:40, rest:30 },
     { name:"Hanging Knee Raise", reps:"8-12", load:"peso corporal", time:40, rest:30 },
     { name:"Suitcase Carry", reps:"30-45 s / lado", load:"kettlebell", time:40, rest:30 }
   ]
+};
+
+const workoutSettings = {
+  curto: { circuit: true, work: 30, transition: 30, rounds: 2 },
+  longo: { circuit: false }
 };
 
 /* ===== FORMAT ===== */
@@ -498,9 +533,34 @@ const app = document.getElementById("app");
 
 function renderWorkout(mode) {
   var exercises = workouts[mode];
+  var settings = workoutSettings[mode] || {};
   var container = document.createElement("div");
   container.className = "workout";
   container.id = "workout-" + mode;
+
+  if (settings.circuit) {
+    var timedCount = exercises.filter(function(ex) { return !ex.mobility; }).length;
+    var panel = document.createElement("div");
+    panel.className = "circuit-panel";
+    panel.innerHTML =
+      '<div class="circuit-kicker">Circuito intervalado</div>' +
+      '<div class="circuit-title">Treino curto guiado por tempo</div>' +
+      '<div class="circuit-meta">' + settings.rounds + ' rodadas · ' + timedCount + ' estações · ' + settings.work + 's trabalho / ' + settings.transition + 's transição</div>' +
+      '<div class="circuit-display">' +
+        '<div class="circuit-time" data-circuit-time>--</div>' +
+        '<div>' +
+          '<div class="circuit-phase" data-circuit-phase>Pronto</div>' +
+          '<div class="circuit-current" data-circuit-current>Faça a mobilidade e inicie o circuito.</div>' +
+          '<div class="circuit-next" data-circuit-next>Próximo: Pallof Press</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="circuit-actions">' +
+        '<button class="circuit-start" data-circuit-start>Iniciar</button>' +
+        '<button class="circuit-next-btn" data-circuit-next-btn>Próximo</button>' +
+        '<button class="circuit-reset" data-circuit-reset>Zerar</button>' +
+      '</div>';
+    container.appendChild(panel);
+  }
 
   exercises.forEach(function(ex, i) {
     var div = document.createElement("div");
@@ -516,18 +576,18 @@ function renderWorkout(mode) {
     }
 
     var seriesHTML = "";
-    if (!ex.mobility) {
+    if (!ex.mobility && !settings.circuit) {
       seriesHTML = '<div class="grid">' +
-        '<div class="button-row"><button class="start">Serie 1</button></div>' +
-        '<div class="button-row"><button class="start">Serie 2</button></div>' +
-        '<div class="button-row"><button class="start">Serie 3</button></div>' +
+        '<div class="button-row"><button class="start">Série 1</button></div>' +
+        '<div class="button-row"><button class="start">Série 2</button></div>' +
+        '<div class="button-row"><button class="start">Série 3</button></div>' +
         '</div>';
     }
 
     div.innerHTML =
       '<div class="title"><span class="title-badge">' + num + '</span>' + ex.name + '</div>' +
       '<div class="row"><span>Reps:</span><span contenteditable>' + ex.reps + '</span><span>Carga:</span><span contenteditable>' + ex.load + '</span></div>' +
-      '<div class="obs" contenteditable>Observacoes...</div>' +
+      '<div class="obs" contenteditable>Observações...</div>' +
       mobilityHTML +
       (!ex.mobility ? seriesHTML : "");
 
@@ -545,6 +605,8 @@ function renderWorkout(mode) {
 
 function bindButtons(mode) {
   var exercises = workouts[mode];
+  var settings = workoutSettings[mode] || {};
+  if (settings.circuit) return;
   var container = document.getElementById("workout-" + mode);
   container.querySelectorAll(".exercise").forEach(function(box, i) {
     if (exercises[i].mobility) return;
@@ -564,6 +626,169 @@ function bindButtons(mode) {
       });
     });
   });
+}
+
+var circuitStates = {};
+
+function getCircuitExercises(mode) {
+  return workouts[mode].filter(function(ex) { return !ex.mobility; });
+}
+
+function buildCircuitSteps(mode) {
+  var settings = workoutSettings[mode];
+  var exercises = getCircuitExercises(mode);
+  var steps = [];
+  for (var round = 1; round <= settings.rounds; round++) {
+    exercises.forEach(function(ex, idx) {
+      steps.push({ type: "work", label: ex.name, seconds: settings.work, round: round });
+      var isLast = round === settings.rounds && idx === exercises.length - 1;
+      if (!isLast) {
+        var nextExercise = exercises[(idx + 1) % exercises.length];
+        steps.push({ type: "transition", label: "Transição", next: nextExercise.name, seconds: settings.transition, round: round });
+      }
+    });
+  }
+  return steps;
+}
+
+function getCircuitState(mode) {
+  if (!circuitStates[mode]) {
+    circuitStates[mode] = {
+      mode: mode,
+      steps: buildCircuitSteps(mode),
+      current: 0,
+      running: false,
+      remainingMs: 0,
+      endMs: 0,
+      interval: null,
+      complete: false
+    };
+  }
+  return circuitStates[mode];
+}
+
+function setCircuitPhase(state, index) {
+  state.current = index;
+  state.remainingMs = state.steps[index].seconds * 1000;
+  state.endMs = Date.now() + state.remainingMs;
+  state.complete = false;
+  updateCircuitPanel(state.mode);
+}
+
+function startCircuit(mode) {
+  var state = getCircuitState(mode);
+  if (state.complete || state.current >= state.steps.length) {
+    resetCircuit(mode);
+    state = getCircuitState(mode);
+  }
+  if (state.remainingMs <= 0) setCircuitPhase(state, state.current);
+  state.running = true;
+  state.endMs = Date.now() + state.remainingMs;
+  clearInterval(state.interval);
+  state.interval = setInterval(function() { tickCircuit(mode); }, 100);
+  updateCircuitPanel(mode);
+}
+
+function pauseCircuit(mode) {
+  var state = getCircuitState(mode);
+  if (!state.running) return;
+  state.remainingMs = Math.max(0, state.endMs - Date.now());
+  state.running = false;
+  clearInterval(state.interval);
+  updateCircuitPanel(mode);
+}
+
+function tickCircuit(mode) {
+  var state = getCircuitState(mode);
+  if (!state.running) return;
+  state.remainingMs = state.endMs - Date.now();
+  if (state.remainingMs <= 0) {
+    nextCircuitStep(mode);
+    return;
+  }
+  updateCircuitPanel(mode);
+}
+
+function nextCircuitStep(mode) {
+  var state = getCircuitState(mode);
+  if (state.current >= state.steps.length - 1) {
+    finishCircuit(mode);
+    return;
+  }
+  setCircuitPhase(state, state.current + 1);
+  if (state.running) {
+    state.endMs = Date.now() + state.remainingMs;
+  }
+  updateCircuitPanel(mode);
+}
+
+function finishCircuit(mode) {
+  var state = getCircuitState(mode);
+  clearInterval(state.interval);
+  state.running = false;
+  state.complete = true;
+  state.remainingMs = 0;
+  updateCircuitPanel(mode);
+  completeWorkout(mode);
+}
+
+function resetCircuit(mode) {
+  var state = getCircuitState(mode);
+  clearInterval(state.interval);
+  circuitStates[mode] = {
+    mode: mode,
+    steps: buildCircuitSteps(mode),
+    current: 0,
+    running: false,
+    remainingMs: 0,
+    endMs: 0,
+    interval: null,
+    complete: false
+  };
+  updateCircuitPanel(mode);
+}
+
+function updateCircuitPanel(mode) {
+  var container = document.getElementById("workout-" + mode);
+  if (!container) return;
+  var state = getCircuitState(mode);
+  var step = state.steps[state.current];
+  var timeEl = container.querySelector("[data-circuit-time]");
+  var phaseEl = container.querySelector("[data-circuit-phase]");
+  var currentEl = container.querySelector("[data-circuit-current]");
+  var nextEl = container.querySelector("[data-circuit-next]");
+  var startBtn = container.querySelector("[data-circuit-start]");
+  if (!timeEl || !phaseEl || !currentEl || !nextEl || !startBtn) return;
+
+  var seconds = Math.ceil(Math.max(0, state.remainingMs) / 1000);
+  timeEl.textContent = state.remainingMs > 0 ? formatSec(seconds) : "--";
+  timeEl.classList.toggle("warn", state.running && seconds <= 10);
+
+  if (state.complete) {
+    phaseEl.textContent = "Concluído";
+    currentEl.textContent = "Circuito curto registrado.";
+    nextEl.textContent = "Use Zerar para repetir.";
+    startBtn.textContent = "Iniciar";
+    return;
+  }
+
+  phaseEl.textContent = step.type === "work" ? "Rodada " + step.round + " · Trabalho" : "Rodada " + step.round + " · Transição";
+  currentEl.textContent = step.type === "work" ? step.label : "Prepare: " + step.next;
+  var nextStep = state.steps[state.current + 1];
+  nextEl.textContent = nextStep ? "Próximo: " + (nextStep.type === "work" ? nextStep.label : "transição") : "Última estação";
+  startBtn.textContent = state.running ? "Pausar" : (state.remainingMs > 0 ? "Continuar" : "Iniciar");
+}
+
+function bindCircuit(mode) {
+  if (!(workoutSettings[mode] || {}).circuit) return;
+  var container = document.getElementById("workout-" + mode);
+  container.querySelector("[data-circuit-start]").addEventListener("click", function() {
+    var state = getCircuitState(mode);
+    if (state.running) pauseCircuit(mode); else startCircuit(mode);
+  });
+  container.querySelector("[data-circuit-next-btn]").addEventListener("click", function() { nextCircuitStep(mode); });
+  container.querySelector("[data-circuit-reset]").addEventListener("click", function() { resetCircuit(mode); });
+  updateCircuitPanel(mode);
 }
 
 function setupPersistence(mode) {
@@ -702,6 +927,7 @@ renderWorkout("curto");
 renderWorkout("longo");
 bindButtons("curto");
 bindButtons("longo");
+bindCircuit("curto");
 setupPersistence("curto");
 setupPersistence("longo");
 document.querySelectorAll(".tab-btn").forEach(function(btn) {
