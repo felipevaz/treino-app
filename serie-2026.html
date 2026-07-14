@@ -38,7 +38,7 @@ body {
 .header { text-align: center; padding: 6px 0 14px 0; }
 .header-logo {
   width: 100px; height: auto;
-  display: block; margin: 0 auto 4px;
+  display: block; margin: 0 auto 2px;
   border-radius: 12px;
 }
 .header-title {
@@ -99,8 +99,8 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .finish { background: #38bdf8; }
 .done { opacity: 0.4; background: #64748b; cursor: default; box-shadow: none; }
 .done:active { transform: none; box-shadow: none; }
-.blink { animation: pulse 1s infinite; }
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+.blink { animation: blinkPulse 0.5s infinite; }
+@keyframes blinkPulse { 0% { opacity: 1; } 50% { opacity: 0.15; } 100% { opacity: 1; } }
 
 /* ===== REST LINE ===== */
 .rest-line {
@@ -316,30 +316,28 @@ function openTimerModal(totalSec, doneCallback) {
 
   timerState = { total: totalSec, paused: false, startMs: 0, remainingMs: totalSec * 1000 };
 
-  // 3-2-1 countdown
-  var count = 3;
-  var cdEl = document.createElement("div");
-  cdEl.className = "timer-countdown-text";
-  cdEl.style.top = "50%";
-  cdEl.style.left = "50%";
-  cdEl.style.transform = "translate(-50%, -50%)";
-  cdEl.textContent = count;
+  var wrap = document.querySelector(".timer-circle-wrap");
   timerText.style.display = "none";
-  document.querySelector(".timer-circle-wrap").appendChild(cdEl);
   timerCircle.setAttribute("stroke-dashoffset", "0");
   timerCircle.style.stroke = "#ef4444";
 
-  var cdTimer = setInterval(function() {
-    count--;
-    if (count <= 0) {
-      clearInterval(cdTimer);
-      cdEl.remove();
+  function showCount(n) {
+    if (n <= 0) {
       timerText.style.display = "";
       runMainTimer();
-    } else {
-      cdEl.textContent = count;
+      return;
     }
-  }, 700);
+    var el = document.createElement("div");
+    el.className = "timer-countdown-text";
+    el.style.top = "50%";
+    el.style.left = "50%";
+    el.style.transform = "translate(-50%, -50%)";
+    el.textContent = n;
+    el.addEventListener("animationend", function() { this.remove(); });
+    wrap.appendChild(el);
+    setTimeout(function() { showCount(n - 1); }, 700);
+  }
+  showCount(3);
 }
 
 function runMainTimer() {
@@ -399,7 +397,7 @@ document.getElementById("btn-restart").addEventListener("click", function() {
 });
 
 document.getElementById("btn-finish").addEventListener("click", function() {
-  closeModal(false);
+  closeModal(true);
 });
 
 /* ===== REST LINE ===== */
