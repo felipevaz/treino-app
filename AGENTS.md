@@ -19,7 +19,7 @@ Arquivo principal:
 
 ### **Estrutura de treinos**
 
-O aplicativo contém um **único treino** com 10 exercícios combinados.
+O aplicativo contém dois modos do mesmo programa: **treino curto** e **treino longo**. O curto é usado em dias de pedalada forte ou menor disponibilidade; o longo é a sessão completa.
 
 ---
 
@@ -108,10 +108,10 @@ Iniciada ao clicar:
 
 ### **Descanso**
 
-Iniciado ao clicar:
+Disparado ao finalizar a série no modal:
 
 ```
-✔ Descanso
+Finalizar
 ```
 
 Requisitos:
@@ -119,12 +119,12 @@ Requisitos:
 - botão ativo deve piscar
 - cronômetro deve mudar para a cor do botão ativo
 - após chegar a zero deve continuar em números negativos
-- formato sempre:
+- formato atual:
 
 ```
-0:30
-0:00
--0:15
+40
+0
+-1
 ```
 
 Nunca:
@@ -134,15 +134,17 @@ Nunca:
 00:00
 ```
 
-### **Limitação do formato**
+### **Decisão sobre o formato**
 
-O formato atual sempre usa `0:` prefixado (minuto único). Funciona corretamente apenas para valores entre 0 e 59 segundos.
-
-Se no futuro um exercício usar `time` ou `rest` ≥ 60 segundos, a função `format()` precisará ser atualizada para calcular minutos reais.
+O formato numérico atual deve ser mantido. Os treinos usam 40 segundos de série e 30 segundos de descanso; mesmo 90 segundos continua aceitável nesse formato. Só revisar essa decisão se o programa passar a exigir durações maiores.
 
 ---
 
 ## **Layout**
+
+### **Dashboard**
+
+O Dashboard é a tela inicial e pode ser aberto a qualquer momento. Ele mostra o total de treinos, o último modo concluído, os últimos sete dias, a distribuição entre curto e longo e o botão de exportação CSV. Ele deve permanecer separado dos containers de treino para não interferir nos cronômetros.
 
 ### **Fonte**
 
@@ -196,39 +198,17 @@ São exibidos apenas como lista.
 
 Possuem:
 
-- cronômetro
+- cronômetro em modal
 - 3 séries
-- botão iniciar
-- botão descanso
+- botão iniciar para cada série
 
-Layout:
-
-cronômetro acima
-
-abaixo:
-
-linha 1:
-
-- Série 1
-- Descanso
-
-linha 2:
-
-- Série 2
-- Descanso
-
-linha 3:
-
-- Série 3
-- Descanso
-
-Botões devem possuir largura uniforme.
+O botão `Finalizar` do modal encerra a série, dispara o descanso visual e marca a série como concluída. Os botões de série devem possuir largura uniforme.
 
 ### **Botão de série concluída (.done)**
 
-Quando o usuário clica em "✔ Descanso" para uma série:
+Quando o usuário finaliza uma série no modal:
 
-- O botão "▶ Série N" correspondente recebe:
+- O botão "Série N" correspondente recebe:
   - `disabled = true`
   - classe `.done` adicionada
   - texto alterado para "Feito"
@@ -245,35 +225,36 @@ Os campos `contenteditable` (reps, carga, observações) são salvos automaticam
 
 ### **Chaves**
 
-Cada campo usa a chave `treino_{campo}_{indice}`, onde:
+Cada campo usa a chave `treino_{modo}_{campo}_{indice}`, onde:
 
+- `{modo}` = `curto` ou `longo`
 - `{campo}` = `reps`, `load` ou `obs`
 - `{indice}` = posição do exercício no array (0-based)
 
 Exemplo:
 
 ```
-treino_reps_0   → reps do 1º exercício (Mobilidade)
-treino_load_3   → carga do 4º exercício (Flexão)
-treino_obs_9    → observações do 10º exercício (Hanging Knee Raise)
+treino_longo_reps_0   → reps do 1º exercício longo (Mobilidade)
+treino_curto_load_2   → carga do 3º exercício curto (Flexão)
+treino_longo_obs_7    → observações do 8º exercício longo (Hanging Knee Raise)
 ```
 
 ### **Função responsável**
 
 `setupPersistence()` em `serie-2026.html`, chamada uma vez no `init`:
 
-1. Localiza o container `#workout`
+1. Localiza o container do modo (`#workout-curto` ou `#workout-longo`)
 2. Itera todos os `.exercise` dentro dele
 3. Localiza os spans `[contenteditable]` e a div `.obs[contenteditable]`
 4. Restaura valores salvos do `localStorage` (se existirem)
 5. Registra `input` listener para salvar alterações
 
-Chamada no INIT após `renderWorkout()` e `bindButtons()`.
+Chamada no INIT após `renderWorkout(modo)` e `bindButtons(modo)`.
 
 ### **Observações**
 
 - Apenas campos editáveis são persistidos (não há salvamento de estado dos botões).
-- Ao recarregar a página, os botões de série voltam ao estado inicial; apenas reps, carga e observações são restaurados.
+- Ao recarregar a página, os botões de série voltam ao estado inicial; apenas reps, carga e observações são restaurados por modo.
 - `localStorage` é síncrono e adequado para uso offline.
 
 ---
@@ -285,10 +266,10 @@ Implementado via `treino_log` no `localStorage`. Registrado automaticamente ao c
 Registrar:
 
 - data (`date`)
-- tipo do treino (`type`: sempre "A" por ser treino único)
+- tipo do treino (`type`: `curto` ou `longo`)
 - timestamp de conclusão (`completedAt`)
 
-Estrutura: `{ date, type, completedAt }` em array JSON.
+Estrutura: `{ date, type, completedAt }` em array JSON. Registros legados `A` são tratados como `longo` e `B` como `curto`.
 
 ---
 
@@ -301,14 +282,14 @@ O treino pode ser concluído de duas formas:
 
 Em ambos os casos:
 
-- Banner verde "Treino concluído! 🎉" aparece no rodapé
-- Após 3 segundos, o banner desaparece
+- Overlay de celebração "Treino concluído!" aparece após a conclusão
+- Após 5 segundos, o overlay desaparece
 
 ---
 
 ## **Exportação**
 
-Botão "📥 Exportar histórico (CSV)" disponível no final do treino (export via `exportHistory()`). Gera download CSV com colunas `date,type,completedAt`.
+Botão "Exportar histórico (CSV)" disponível no Dashboard (export via `exportHistory()`). Gera download CSV com colunas `date,type,completedAt`.
 
 ---
 
@@ -371,6 +352,10 @@ Mudanças em timers devem ser tratadas como alterações de alto risco.
 | Transições | `fadeIn` (opacity + translateY) no banner |
 
 ---
+
+## **Registro de revisão**
+
+`TREINOS.md` mantém, fora do HTML, o registro humano dos exercícios, da ordem, do objetivo de cada modo e das decisões de revisão. Ele não é carregado pelo navegador e não substitui o arquivo HTML distribuível. Se houver divergência, o comportamento implementado no HTML é a referência operacional até uma sincronização deliberada.
 
 ## **Objetivo de Longo Prazo**
 

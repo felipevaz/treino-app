@@ -147,11 +147,11 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .timer-circle-fg {
   fill: none; stroke: #ef4444; stroke-width: 8; stroke-linecap: round;
   transition: stroke 0.3s var(--ease);
+}
 .timer-circle.warn { animation: circlePulse 2s var(--ease) infinite; }
 @keyframes circlePulse {
   0%, 100% { transform: rotate(-90deg) scale(1); }
   50% { transform: rotate(-90deg) scale(1.04); }
-}
 }
 .timer-text {
   position: absolute; font-family: 'BBH Hegarty', sans-serif;
@@ -221,6 +221,26 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 @keyframes drawCheck { to { stroke-dashoffset: 0; } }
 .celebrate-title { font-size: 1.6em; font-weight: 700; color: var(--text); margin-bottom: 6px; }
 .celebrate-sub { font-size: 0.95em; color: var(--muted); }
+.tab-bar { display: flex; gap: 8px; margin: 0 0 16px; }
+.tab-btn {
+  flex: 1; padding: 10px 8px; border: none; border-radius: 10px;
+  background: var(--tab); color: var(--muted); font-family: inherit; font-size: 0.95em; font-weight: 700;
+}
+.tab-btn.active { background: #22c55e; color: #020617; }
+.dashboard { display: none; animation: fadeIn 0.35s var(--ease); }
+.dashboard.visible { display: block; }
+.dash-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 16px; margin-bottom: 14px;
+}
+.dash-card-title { color: var(--muted); font-size: 0.85em; margin-bottom: 6px; }
+.dash-value { font-size: 1.8em; font-weight: 700; }
+.dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.dash-days { display: flex; justify-content: space-between; gap: 6px; }
+.dash-day { flex: 1; text-align: center; font-size: 0.75em; color: var(--muted); }
+.dash-dot { display: grid; place-items: center; width: 30px; height: 30px; margin: 4px auto; border-radius: 50%; background: #334155; color: var(--muted); }
+.dash-dot.done { background: #22c55e; color: #020617; opacity: 1; }
+.dash-actions { width: 100%; margin-top: 4px; background: #38bdf8; }
 .confetti {
   position: fixed; top: -12px; border-radius: 2px; opacity: 0;
   animation: confettiFall var(--cf-dur, 2.4s) linear forwards;
@@ -248,8 +268,15 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   <div class="header-title">GrenzFIT</div>
 </div>
 
+<nav class="tab-bar" aria-label="Navegação principal">
+  <button class="tab-btn" data-view="workout" data-mode="curto">Treino curto</button>
+  <button class="tab-btn" data-view="workout" data-mode="longo">Treino longo</button>
+  <button class="tab-btn active" data-view="dashboard">Dashboard</button>
+</nav>
+
 <div id="rest-line" class="rest-line"></div>
 <div id="app"></div>
+<div id="dashboard" class="dashboard visible"></div>
 
 <!-- TIMER MODAL -->
 <div id="timer-modal" class="timer-modal">
@@ -283,18 +310,27 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 <script>
 /* ===== DATA ===== */
-const exercises = [
-  { name:"Mobilidade", reps:"Sequencia", load:"0 kg", mobility:true, list:["Floppy arm - 10","Cat/cow - 10","Best stretch - 10"] },
-  { name:"Pallof Press", reps:"10-12 / lado", load:"elastico", time:40, rest:30 },
-  { name:"Agachamento unilateral", reps:"12", load:"5 kg", time:40, rest:30 },
-  { name:"Flexao de braco", reps:"8-12", load:"peso corporal", time:40, rest:30 },
-  { name:"Rotacao externa do antebraco", reps:"10", load:"4 kg", time:40, rest:30 },
-  { name:"Sleeper Stretch", reps:"1", load:"0 kg", mobility:true, list:[] },
-  { name:"Barra fixa", reps:"4 / 3 / 2", load:"peso corporal", time:40, rest:30 },
-  { name:"Remada", reps:"10-12", load:"kettlebell 12 kg", time:40, rest:30 },
-  { name:"Levantamento terra KB", reps:"12", load:"15 kg", time:40, rest:30 },
-  { name:"Hanging Knee Raise", reps:"8-12", load:"peso corporal", time:40, rest:30 }
-];
+const workouts = {
+  curto: [
+    { name:"Mobilidade", reps:"Sequencia", load:"0 kg", mobility:true, list:["Floppy arm - 10","Cat/cow - 10","Best stretch - 10"] },
+    { name:"Pallof Press", reps:"10-12 / lado", load:"elastico", time:40, rest:30 },
+    { name:"Flexao de braco", reps:"8-12", load:"peso corporal", time:40, rest:30 },
+    { name:"Barra fixa", reps:"4 / 3 / 2", load:"peso corporal", time:40, rest:30 },
+    { name:"Hanging Knee Raise", reps:"8-12", load:"peso corporal", time:40, rest:30 },
+    { name:"Suitcase Carry", reps:"30-45 s / lado", load:"kettlebell", time:40, rest:30 }
+  ],
+  longo: [
+    { name:"Mobilidade", reps:"Sequencia", load:"0 kg", mobility:true, list:["Floppy arm - 10","Cat/cow - 10","Best stretch - 10"] },
+    { name:"Pallof Press", reps:"10-12 / lado", load:"elastico", time:40, rest:30 },
+    { name:"Agachamento unilateral", reps:"12", load:"5 kg", time:40, rest:30 },
+    { name:"Flexao de braco", reps:"8-12", load:"peso corporal", time:40, rest:30 },
+    { name:"Barra fixa", reps:"4 / 3 / 2", load:"peso corporal", time:40, rest:30 },
+    { name:"Remada", reps:"10-12", load:"kettlebell 12 kg", time:40, rest:30 },
+    { name:"Levantamento terra KB", reps:"12", load:"15 kg", time:40, rest:30 },
+    { name:"Hanging Knee Raise", reps:"8-12", load:"peso corporal", time:40, rest:30 },
+    { name:"Suitcase Carry", reps:"30-45 s / lado", load:"kettlebell", time:40, rest:30 }
+  ]
+};
 
 /* ===== FORMAT ===== */
 function formatSec(s) {
@@ -460,10 +496,11 @@ function showRestLine(seconds) {
 /* ===== RENDER ===== */
 const app = document.getElementById("app");
 
-function renderWorkout() {
+function renderWorkout(mode) {
+  var exercises = workouts[mode];
   var container = document.createElement("div");
-  container.className = "workout visible";
-  container.id = "workout";
+  container.className = "workout";
+  container.id = "workout-" + mode;
 
   exercises.forEach(function(ex, i) {
     var div = document.createElement("div");
@@ -502,12 +539,13 @@ function renderWorkout() {
   var finishBtn = document.createElement("button");
   finishBtn.className = "finish-workout";
   finishBtn.textContent = "Concluir treino";
-  finishBtn.addEventListener("click", completeWorkout);
+  finishBtn.addEventListener("click", function() { completeWorkout(mode); });
   container.appendChild(finishBtn);
 }
 
-function bindButtons() {
-  var container = document.getElementById("workout");
+function bindButtons(mode) {
+  var exercises = workouts[mode];
+  var container = document.getElementById("workout-" + mode);
   container.querySelectorAll(".exercise").forEach(function(box, i) {
     if (exercises[i].mobility) return;
     var starts = box.querySelectorAll(".start");
@@ -521,41 +559,52 @@ function bindButtons() {
           showRestLine(exercises[i].rest);
           var allStarts = container.querySelectorAll(".start");
           var allDone = Array.from(allStarts).every(function(b) { return b.disabled; });
-          if (allDone) completeWorkout();
+          if (allDone) completeWorkout(mode);
         });
       });
     });
   });
 }
 
-function setupPersistence() {
-  var container = document.getElementById("workout");
+function setupPersistence(mode) {
+  var container = document.getElementById("workout-" + mode);
   container.querySelectorAll(".exercise").forEach(function(box, i) {
     var spans = box.querySelectorAll("span[contenteditable]");
     if (!spans[0] || !spans[1]) return;
     var repsEl = spans[0], loadEl = spans[1];
     var obsEl = box.querySelector(".obs[contenteditable]");
     if (!obsEl) return;
-    var prefix = "treino_";
-    if (localStorage.getItem(prefix + "reps_" + i) !== null) repsEl.textContent = localStorage.getItem(prefix + "reps_" + i);
-    if (localStorage.getItem(prefix + "load_" + i) !== null) loadEl.textContent = localStorage.getItem(prefix + "load_" + i);
-    if (localStorage.getItem(prefix + "obs_" + i) !== null) obsEl.textContent = localStorage.getItem(prefix + "obs_" + i);
+    var prefix = "treino_" + mode + "_";
+    var legacyIndex = mode === "longo" ? [0, 1, 2, 3, 6, 7, 8, 9][i] : i;
+    var legacyPrefixes = mode === "longo" ? ["treino_", "treinoA_"] : ["treinoB_"];
+    var savedReps = localStorage.getItem(prefix + "reps_" + i);
+    var savedLoad = localStorage.getItem(prefix + "load_" + i);
+    var savedObs = localStorage.getItem(prefix + "obs_" + i);
+    legacyPrefixes.some(function(legacyPrefix) {
+      if (savedReps === null) savedReps = localStorage.getItem(legacyPrefix + "reps_" + legacyIndex);
+      if (savedLoad === null) savedLoad = localStorage.getItem(legacyPrefix + "load_" + legacyIndex);
+      if (savedObs === null) savedObs = localStorage.getItem(legacyPrefix + "obs_" + legacyIndex);
+      return savedReps !== null && savedLoad !== null && savedObs !== null;
+    });
+    if (savedReps !== null) repsEl.textContent = savedReps;
+    if (savedLoad !== null) loadEl.textContent = savedLoad;
+    if (savedObs !== null) obsEl.textContent = savedObs;
     repsEl.addEventListener("input", function() { localStorage.setItem(prefix + "reps_" + i, repsEl.textContent); });
     loadEl.addEventListener("input", function() { localStorage.setItem(prefix + "load_" + i, loadEl.textContent); });
     obsEl.addEventListener("input", function() { localStorage.setItem(prefix + "obs_" + i, obsEl.textContent); });
   });
 }
 
-function logWorkout() {
+function logWorkout(mode) {
   var log = JSON.parse(localStorage.getItem("treino_log") || "[]");
   var today = new Date().toISOString().slice(0, 10);
-  var entry = { date: today, type: "A", completedAt: new Date().toISOString() };
+  var entry = { date: today, type: mode, completedAt: new Date().toISOString() };
   var idx = log.findIndex(function(e) { return e.date === today; });
   if (idx >= 0) log[idx] = entry; else log.push(entry);
   localStorage.setItem("treino_log", JSON.stringify(log));
 }
 
-function completeWorkout() { logWorkout(); showCelebration(); }
+function completeWorkout(mode) { logWorkout(mode); showCelebration(); renderDashboard(); }
 
 function showCelebration() {
   var el = document.getElementById("celebrate");
@@ -596,9 +645,72 @@ function exportHistory() {
   document.body.removeChild(a); URL.revokeObjectURL(url);
 }
 
-renderWorkout();
-bindButtons();
-setupPersistence();
+function readHistory() {
+  return JSON.parse(localStorage.getItem("treino_log") || "[]");
+}
+
+function displayType(type) {
+  if (type === "A") return "longo";
+  if (type === "B") return "curto";
+  return type;
+}
+
+function renderDashboard() {
+  var log = readHistory();
+  var normalized = log.map(function(entry) {
+    return { date: entry.date, type: displayType(entry.type), completedAt: entry.completedAt };
+  });
+  var last = normalized[normalized.length - 1];
+  var days = [];
+  for (var i = 6; i >= 0; i--) {
+    var d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - i);
+    var date = d.toISOString().slice(0, 10);
+    days.push({ date: date, done: normalized.some(function(entry) { return entry.date === date; }) });
+  }
+  var dash = document.getElementById("dashboard");
+  dash.innerHTML =
+    '<div class="dash-grid">' +
+      '<div class="dash-card"><div class="dash-card-title">Total de treinos</div><div class="dash-value">' + normalized.length + '</div></div>' +
+      '<div class="dash-card"><div class="dash-card-title">Último treino</div><div class="dash-value">' + (last ? last.type : "-") + '</div></div>' +
+    '</div>' +
+    '<div class="dash-card"><div class="dash-card-title">Últimos 7 dias</div><div class="dash-days">' +
+      days.map(function(day) {
+        var label = new Date(day.date + "T12:00:00").toLocaleDateString("pt-BR", { weekday: "short" }).slice(0, 3);
+        return '<div class="dash-day">' + label + '<div class="dash-dot' + (day.done ? ' done' : '') + '">' + (day.done ? '✓' : '·') + '</div></div>';
+      }).join("") +
+    '</div></div>' +
+    '<div class="dash-card"><div class="dash-card-title">Distribuição</div><div>Curto: ' + normalized.filter(function(e) { return e.type === "curto"; }).length + '</div><div>Longo: ' + normalized.filter(function(e) { return e.type === "longo"; }).length + '</div></div>' +
+    '<button class="dash-actions" id="btn-export-history">Exportar histórico (CSV)</button>';
+  document.getElementById("btn-export-history").addEventListener("click", exportHistory);
+}
+
+function showView(view, mode) {
+  document.querySelectorAll(".tab-btn").forEach(function(btn) {
+    btn.classList.toggle("active", btn.dataset.view === view && (view === "dashboard" || btn.dataset.mode === mode));
+  });
+  document.querySelectorAll(".workout").forEach(function(container) {
+    container.classList.toggle("visible", view === "workout" && container.id === "workout-" + mode);
+  });
+  document.getElementById("dashboard").classList.toggle("visible", view === "dashboard");
+  if (view === "dashboard") renderDashboard();
+  if (view === "workout") localStorage.setItem("treino_selected", mode);
+}
+
+renderWorkout("curto");
+renderWorkout("longo");
+bindButtons("curto");
+bindButtons("longo");
+setupPersistence("curto");
+setupPersistence("longo");
+document.querySelectorAll(".tab-btn").forEach(function(btn) {
+  btn.addEventListener("click", function() {
+    showView(btn.dataset.view, btn.dataset.mode);
+  });
+});
+renderDashboard();
+showView("dashboard");
 </script>
 </body>
 </html>

@@ -1,144 +1,83 @@
 # Plano de Evolução — Treino App
 
-## Objetivo
+## Princípio
 
-Evoluir o aplicativo de **executor de treino** para um **companheiro de treino** que ajude a manter consistência ao longo do tempo, sem perder a simplicidade offline de arquivo único.
+O aplicativo `serie-2026.html` é a referência operacional. A documentação descreve o que está implementado no HTML; o registro em `TREINOS.md` serve para revisar periodicamente a composição dos treinos antes de alterar o app.
 
----
+O produto continua sendo um arquivo HTML único, offline, sem backend e sem frameworks externos.
 
-## Visão Geral
+## Estado atual
 
-Três telas alternadas via show/hide (mesmo princípio do A/B atual), preservando o DOM e os cronômetros:
+- Dashboard é a tela inicial.
+- Há dois modos: `Treino curto` e `Treino longo`.
+- O treino curto tem 6 exercícios, incluindo mobilidade e Suitcase Carry.
+- O treino longo tem 9 exercícios, incluindo mobilidade, pernas, empurrar, puxar, hinge e core.
+- Cada exercício normal tem três séries de 40 segundos, com 30 segundos de descanso visual na linha superior.
+- Hanging Knee Raise é o exercício principal de flexão/controle da pelve do core.
+- Pallof Press e Suitcase Carry cumprem funções complementares de estabilidade.
+- Around the world não é obrigatório no treino principal; permanece uma opção da rotina de mobilidade/coordenação.
+- Rotação externa do antebraço e Sleeper Stretch ficam fora do treino principal, na rotina matinal.
+- Campos de repetições, carga e observações são persistidos por modo em `localStorage`.
+- O histórico é persistido em `treino_log` e pode ser exportado pelo Dashboard em CSV.
 
-| Tela | Função |
-|------|--------|
-| **Treino** | Execução dos treinos A/B (como hoje) |
-| **Dashboard** | Métricas de consistência e motivação visual |
-| **Histórico** | (futuro) Lista cronológica de sessões |
+## Cronômetro
 
-Nenhuma funcionalidade nova interfere nos cronômetros ou na execução do treino.
+O cronômetro atual deve ser preservado. A interface exibe algarismos simples, como `40`, `0` e `-1`, com contagem negativa depois do fim. Não há exercício atual acima de um minuto; mesmo 90 segundos continua compatível com a decisão atual. Não alterar o formato sem uma necessidade real.
 
----
+A lógica do modal e o DOM dos treinos são áreas de alto risco. Mudanças de tela devem apenas alternar visibilidade; não recriar cards enquanto houver timer ativo.
 
-## 1. Registro de Execução
+## Modos de treino
 
-### Quando marcar como concluído
+### Treino curto
 
-O treino é considerado concluído quando **todas as 3 séries de todos os exercícios com cronômetro** estiverem marcadas como Feito (`.done`). Exercícios de mobilidade são opcionais — não bloqueiam a conclusão.
+Usado em dias de pedalada forte, fadiga elevada ou pouco tempo. Mantém mobilidade, parte superior, core e estabilidade sem exigir o bloco completo de pernas.
 
-### Gatilho
+### Treino longo
 
-Assim que a última série do último exercício receber "✔ Descanso":
+Usado em dias leves ou com melhor recuperação. Inclui o trabalho de pernas e cadeia posterior, além do conjunto completo de puxar, empurrar e core.
 
-1. Mostrar banner **"Treino A concluído! 🎉"** (some após 3 s)
-2. Registrar sessão no `localStorage`
-3. Oferecer botão "Ver Dashboard"
+O aplicativo não decide automaticamente a intensidade da pedalada. A escolha do modo permanece manual para evitar uma regra falsa baseada apenas em quilometragem.
 
-### Tratamento de repetições
+## Dashboard
 
-Se o usuário refizer o mesmo treino no mesmo dia, o registro anterior é sobrescrito (apenas a última conclusão do dia conta).
+O Dashboard deve permanecer disponível como tela inicial e ser acessível durante o uso. Ele lê o `treino_log` ao ser exibido e apresenta:
 
----
+- total de treinos;
+- último modo concluído;
+- atividade dos últimos sete dias;
+- distribuição entre curto e longo;
+- exportação CSV.
 
-## 2. Estrutura dos Dados Persistidos
+O Dashboard não deve controlar nem reiniciar timers.
 
-Tudo em `localStorage`, chave única para histórico:
+## Histórico e compatibilidade
 
-```
-treino_log → JSON Array
-```
+O formato atual é:
 
 ```json
-[
-  { "date": "2026-06-20", "type": "A", "completedAt": "2026-06-20T07:10:00" },
-  { "date": "2026-06-21", "type": "B", "completedAt": "2026-06-21T07:05:00" }
-]
+{ "date": "2026-07-14", "type": "longo", "completedAt": "2026-07-14T07:10:00.000Z" }
 ```
 
-Tamanho: ~150 bytes/sessão. 2 anos de treino (~500 sessões) = ~75 KB — folgado no limite de 5 MB do `localStorage`.
+Registros antigos com `type: "A"` são tratados como `longo`; registros com `type: "B"` são tratados como `curto`. O app continua sobrescrevendo a conclusão do mesmo dia.
 
-### Chaves existentes (mantidas)
+## Registro separado dos treinos
 
-- `treinoA_reps_0`, `treinoA_load_0`, `treinoA_obs_0`, etc.
-- `treino_selected`
+`TREINOS.md` é o registro humano para revisão de exercícios, ordem, volume e critérios de uso. Ele não é carregado pelo navegador e não substitui os dados embutidos no HTML. Depois de cada revisão, o HTML deve ser atualizado e testado; se houver divergência, o comportamento do app é a referência até a próxima sincronização deliberada.
 
----
+## Próximas evoluções
 
-## 3. Dashboard
+1. Observar o uso real dos modos curto/longo antes de criar mais variações.
+2. Melhorar o Dashboard sem alterar o modal do timer.
+3. Considerar uma indicação explícita de “pedalada forte” apenas se isso simplificar a escolha manual.
+4. Avaliar progressão de carga do levantamento terra KB e do Suitcase Carry.
+5. Manter around the world como opção separada, sem torná-lo requisito do treino.
 
-Cartões simples, empilhados verticalmente no mobile:
-
-| Cartão | Cálculo |
-|--------|---------|
-| **Último treino** | Última entrada do `treino_log` |
-| **Total de treinos** | `treino_log.length` |
-| **Sequência atual** | Dias consecutivos sem falha (1 treino/dia) |
-| **Distribuição A/B** | Contagem por tipo no log |
-| **Últimos 7 dias** | Bolinhas ✔ (treinou) / ✗ (não treinou) |
-
-### Regra da sequência (streak)
-
-1. Ordenar `treino_log` por data decrescente
-2. Contar dias consecutivos a partir de hoje
-3. Se hoje ainda não foi feito, considerar streak a partir de ontem
-4. Um dia sem treino zera a streak
-
-### Atualização
-
-Dashboard lê do `treino_log` sempre que a tela é exibida. Não precisa de atualização em tempo real.
-
----
-
-## 4. Fluxo de Uso
-
-```
-1. Abre o app
-   ├→ Tela Dashboard (sempre)
-   └→ Abas: "Treino A" | "Treino B" | "Dashboard"
-
-2. Treinar:
-   a. Clica em "Treino A" ou "Treino B"
-   b. Executa séries normalmente
-   c. Opção A: concluir todas as séries → automático
-   d. Opção B: clicar "✅ Concluir treino" no final
-   e. Banner + redirecionamento automático ao Dashboard (2 s)
-
-3. Dashboard:
-   a. Aba "Dashboard" → cartões com estatísticas
-   b. Volta para "Treino" quando quiser
-```
-
----
-
-## 5. Etapas de Implementação
-
-### ✅ Etapa 1 — Registro de conclusão (implementado)
-- Detectar quando todas as séries de todos os exercícios estão Feito
-- Salvar `treino_log` no `localStorage`
-- Banner de conclusão com auto-dismiss (4 s)
-- Ignorar mobilidade na contagem
-
-### ✅ Etapa 2 — Alternância inteligente (implementado)
-- Ao carregar, verificar último treino no log
-- Sugerir o outro automaticamente
-- Padrão: A se não houver histórico
-
-### ✅ Etapa 3 — Dashboard (implementado)
-- Container `#screen-dashboard` (show/hide via classe `.screen`)
-- Aba "Dashboard" na barra de navegação
-- Cartões: último treino, total, streak, distribuição A/B, últimos 7 dias
-- Botão "Exportar histórico (CSV)"
-
-### ✅ Etapa 4 — Exportação (implementado)
-- Botão no Dashboard → download CSV via Blob
-
----
-
-## 6. Riscos
+## Riscos
 
 | Risco | Mitigação |
-|-------|-----------|
-| Dashboard recriar elementos e afetar timers | Dashboard é tela separada sem cronômetros — show/hide seguro |
-| Histórico consumir muito `localStorage` | 2 anos = ~75 KB, irrisório |
-| Sequência confusa se treinar 2x no dia | Contar 1 treino/dia; múltiplos no mesmo dia atualizam sem contar dobro |
-| Usuário fechar app antes de concluir | Estado preservado no DOM; pode retomar; não há conclusão parcial |
+|---|---|
+| Timer interrompido por navegação | alternar classes de visibilidade; não re-renderizar treinos durante a execução |
+| Dados antigos desaparecerem | fallback das chaves antigas para o modo longo |
+| Curto virar cópia incompleta do longo | revisar os padrões cobertos em `TREINOS.md` |
+| Dashboard crescer demais | manter métricas simples e leitura direta do histórico |
+| Registro separado divergir do app | usar o HTML como referência operacional e sincronizar após revisões |
