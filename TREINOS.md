@@ -7,13 +7,14 @@ Este arquivo é o registro humano para revisão periódica. O aplicativo em `ser
 Usar em dias de pedalada mais forte, pernas cansadas ou pouco tempo. A sessão preserva estímulo de mobilidade, parte superior e core sem exigir o bloco completo de pernas.
 
 Formato atual no aplicativo: circuito intervalado, com 2 rodadas de 30 segundos de trabalho e 30 segundos de transição. A mobilidade vem antes do circuito e não entra no temporizador.
+Exercícios unilaterais aparecem em lados consecutivos, sem descanso entre um lado e outro.
 
 | Ordem | Exercício | Repetições | Carga | Papel |
 |---:|---|---|---|---|
 | 1 | Mobilidade | Sequência | 0 kg | preparação |
 | 2 | Pallof Press | 10-12 / lado | elástico | anti-rotação |
 | 3 | Flexão de braço | 8-12 | peso corporal | empurrar |
-| 4 | Barra fixa | 4 / 3 / 2 | peso corporal | puxar vertical |
+| 4 | Remada unilateral KB | 10-12 / lado | kettlebell 12 kg | puxar horizontal |
 | 5 | Hanging Knee Raise | 8-12 | peso corporal | core e controle da pelve |
 | 6 | Suitcase Carry | 30-45 s / lado | kettlebell | anti-flexão lateral, marcha e pegada |
 
@@ -37,6 +38,7 @@ Usar em dias de melhor recuperação. Inclui o treino curto ampliado com pernas,
 
 - Treino curto usa circuito de 2 rodadas, 30 segundos de trabalho e 30 segundos de transição.
 - Treino longo usa 3 séries de 40 segundos por exercício, com 30 segundos de descanso visual.
+- Exercícios com indicação `/ lado` no curto são feitos nos dois lados em sequência, sem descanso extra.
 - Hanging Knee Raise deve ser controlado, sem balanço, com retroversão leve da pelve no topo.
 - Suitcase Carry: postura ereta, costelas controladas, sem inclinar o tronco para o lado da carga.
 - Pallof Press e Suitcase Carry são complementares; no circuito curto, ambos aparecem, mas a intensidade deve ser ajustada pela técnica.

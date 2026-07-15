@@ -372,22 +372,22 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 const workouts = {
   curto: [
     { name:"Mobilidade", reps:"Sequência", load:"0 kg", mobility:true, list:["Floppy arm - 10","Cat/cow - 10","Best stretch - 10"] },
-    { name:"Pallof Press", reps:"10-12 / lado", load:"elástico", time:40, rest:30 },
+    { name:"Pallof Press", reps:"10-12 / lado", load:"elástico", time:40, rest:30, sides:["E", "D"] },
     { name:"Flexão de braço", reps:"8-12", load:"peso corporal", time:40, rest:30 },
-    { name:"Barra fixa", reps:"4 / 3 / 2", load:"peso corporal", time:40, rest:30 },
+    { name:"Remada unilateral KB", reps:"10-12 / lado", load:"kettlebell 12 kg", time:40, rest:30, sides:["E", "D"] },
     { name:"Hanging Knee Raise", reps:"8-12", load:"peso corporal", time:40, rest:30 },
-    { name:"Suitcase Carry", reps:"30-45 s / lado", load:"kettlebell", time:40, rest:30 }
+    { name:"Suitcase Carry", reps:"30-45 s / lado", load:"kettlebell", time:40, rest:30, sides:["E", "D"] }
   ],
   longo: [
     { name:"Mobilidade", reps:"Sequência", load:"0 kg", mobility:true, list:["Floppy arm - 10","Cat/cow - 10","Best stretch - 10"] },
-    { name:"Pallof Press", reps:"10-12 / lado", load:"elástico", time:40, rest:30 },
+    { name:"Pallof Press", reps:"10-12 / lado", load:"elástico", time:40, rest:30, sides:["E", "D"] },
     { name:"Agachamento unilateral", reps:"12", load:"5 kg", time:40, rest:30 },
     { name:"Flexão de braço", reps:"8-12", load:"peso corporal", time:40, rest:30 },
     { name:"Barra fixa", reps:"4 / 3 / 2", load:"peso corporal", time:40, rest:30 },
     { name:"Remada", reps:"10-12", load:"kettlebell 12 kg", time:40, rest:30 },
     { name:"Levantamento terra KB", reps:"12", load:"15 kg", time:40, rest:30 },
     { name:"Hanging Knee Raise", reps:"8-12", load:"peso corporal", time:40, rest:30 },
-    { name:"Suitcase Carry", reps:"30-45 s / lado", load:"kettlebell", time:40, rest:30 }
+    { name:"Suitcase Carry", reps:"30-45 s / lado", load:"kettlebell", time:40, rest:30, sides:["E", "D"] }
   ]
 };
 
@@ -401,6 +401,94 @@ function formatSec(s) {
   return (s < 0 ? "-" : "") + Math.abs(Math.round(s));
 }
 
+/* ===== DEVICE HELPERS ===== */
+var wakeLock = null;
+var audioCtx = null;
+
+function isWorkoutVisible() {
+  return !!document.querySelector(".workout.visible");
+}
+
+async function requestWakeLock() {
+  if (!("wakeLock" in navigator) || !isWorkoutVisible()) return;
+  try {
+    if (wakeLock) return;
+    wakeLock = await navigator.wakeLock.request("screen");
+    wakeLock.addEventListener("release", function() {
+      wakeLock = null;
+    });
+  } catch (err) {
+    wakeLock = null;
+  }
+}
+
+function releaseWakeLock() {
+  if (!wakeLock) return;
+  var lock = wakeLock;
+  wakeLock = null;
+  lock.release().catch(function() {});
+}
+
+function getAudioContext() {
+  if (!audioCtx) {
+    var Ctor = window.AudioContext || window.webkitAudioContext;
+    if (!Ctor) return null;
+    audioCtx = new Ctor();
+  }
+  return audioCtx;
+}
+
+function unlockAudio() {
+  var ctx = getAudioContext();
+  if (!ctx) return;
+  if (ctx.state === "suspended") {
+    ctx.resume().catch(function() {});
+  }
+}
+
+function playTone(frequency, durationMs, gainValue, waveType) {
+  var ctx = getAudioContext();
+  if (!ctx) return;
+  unlockAudio();
+  var now = ctx.currentTime;
+  var osc = ctx.createOscillator();
+  var gain = ctx.createGain();
+  osc.type = waveType || "sine";
+  osc.frequency.setValueAtTime(frequency, now);
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(gainValue || 0.08, now + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + durationMs / 1000);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + durationMs / 1000 + 0.03);
+}
+
+function playCue(kind) {
+  if (kind === "countdown") {
+    playTone(880, 70, 0.06, "square");
+    return;
+  }
+  if (kind === "tick") {
+    playTone(920, 45, 0.045, "square");
+    return;
+  }
+  if (kind === "round") {
+    playTone(880, 60, 0.06, "square");
+    setTimeout(function() { playTone(1040, 60, 0.05, "square"); }, 90);
+    return;
+  }
+  if (kind === "end") {
+    playTone(660, 80, 0.05, "triangle");
+    setTimeout(function() { playTone(988, 100, 0.05, "triangle"); }, 120);
+    return;
+  }
+  if (kind === "complete") {
+    playTone(660, 80, 0.05, "triangle");
+    setTimeout(function() { playTone(988, 100, 0.05, "triangle"); }, 120);
+  }
+}
+
 /* ===== TIMER MODAL ===== */
 const modal = document.getElementById("timer-modal");
 const timerCircle = document.getElementById("timer-circle");
@@ -412,6 +500,8 @@ let timerState = null;
 let timerDoneCallback = null;
 
 function openTimerModal(totalSec, doneCallback) {
+  requestWakeLock();
+  unlockAudio();
   modal.classList.remove("hiding");
   void modal.offsetWidth;
   modal.classList.add("show");
@@ -420,7 +510,7 @@ function openTimerModal(totalSec, doneCallback) {
   btnPause.textContent = "Pausar";
   timerDoneCallback = doneCallback;
 
-  timerState = { total: totalSec, paused: false, startMs: 0, remainingMs: totalSec * 1000 };
+  timerState = { total: totalSec, paused: false, startMs: 0, remainingMs: totalSec * 1000, lastBeepSecond: null, endBeeped: false };
 
   var wrap = document.querySelector(".timer-circle-wrap");
   timerText.style.display = "none";
@@ -439,6 +529,7 @@ function openTimerModal(totalSec, doneCallback) {
       setTimeout(function() { runMainTimer(); }, 500);
       return;
     }
+    playCue("countdown");
     var el = document.createElement("div");
     el.className = "timer-countdown-text";
     el.style.top = "50%";
@@ -456,6 +547,8 @@ function runMainTimer() {
   timerState.startMs = Date.now();
   timerState.remainingMs = timerState.total * 1000;
   timerState.paused = false;
+  timerState.lastBeepSecond = null;
+  timerState.endBeeped = false;
   timerText.classList.remove("blink");
   timerCircle.classList.remove("blink", "warn");
   btnPause.textContent = "Pausar";
@@ -469,12 +562,21 @@ function tick() {
   var secs = rem / 1000;
   var total = timerState.total;
   if (rem <= 0) {
+    if (!timerState.endBeeped) {
+      playCue("end");
+      timerState.endBeeped = true;
+    }
     timerText.textContent = formatSec(secs);
     timerText.style.color = "var(--neg)";
     timerText.classList.add("blink");
     timerCircle.classList.add("blink");
     requestAnimationFrame(function() { setTimeout(tick, 50); });
     return;
+  }
+  var remainingSecond = Math.ceil(rem / 1000);
+  if (remainingSecond <= 10 && remainingSecond > 0 && remainingSecond !== timerState.lastBeepSecond) {
+    timerState.lastBeepSecond = remainingSecond;
+    playCue("tick");
   }
   var frac = secs / total;
   var off = CIRC * (1 - frac);
@@ -498,6 +600,7 @@ function closeModal(auto) {
     var cb = timerDoneCallback;
     timerState = null;
     timerDoneCallback = null;
+    if (!isWorkoutVisible()) releaseWakeLock();
     if (auto && cb) cb();
   }, 500);
 }
@@ -557,6 +660,12 @@ function showRestLine(seconds) {
   }, 1000);
 }
 
+function exerciseSideLabel(side) {
+  if (side === "E") return "lado esquerdo";
+  if (side === "D") return "lado direito";
+  return side || "";
+}
+
 /* ===== RENDER ===== */
 const app = document.getElementById("app");
 
@@ -568,7 +677,9 @@ function renderWorkout(mode) {
   container.id = "workout-" + mode;
 
   if (settings.circuit) {
-    var timedCount = exercises.filter(function(ex) { return !ex.mobility; }).length;
+    var timedCount = exercises.filter(function(ex) { return !ex.mobility; }).reduce(function(total, ex) {
+      return total + (ex.sides && ex.sides.length ? ex.sides.length : 1);
+    }, 0);
     var panel = document.createElement("div");
     panel.className = "circuit-panel";
     panel.innerHTML =
@@ -591,8 +702,9 @@ function renderWorkout(mode) {
       '</div>' +
       '<div class="circuit-actions">' +
         '<button class="circuit-start" data-circuit-start>Iniciar</button>' +
-        '<button class="circuit-next-btn" data-circuit-next-btn>Próximo</button>' +
-        '<button class="circuit-reset" data-circuit-reset>Zerar</button>' +
+        '<button class="circuit-reset" data-circuit-reset>Reiniciar</button>' +
+        '<button class="circuit-skip" data-circuit-skip>Pular</button>' +
+        '<button class="circuit-close" data-circuit-close>Fechar série</button>' +
       '</div>';
     container.appendChild(panel);
   }
@@ -675,11 +787,31 @@ function buildCircuitSteps(mode) {
   var steps = [];
   for (var round = 1; round <= settings.rounds; round++) {
     exercises.forEach(function(ex, idx) {
-      steps.push({ type: "work", label: ex.name, seconds: settings.work, round: round });
+      var sides = ex.sides && ex.sides.length ? ex.sides : [null];
+      sides.forEach(function(side, sideIndex) {
+        steps.push({
+          type: "work",
+          label: ex.name,
+          side: side,
+          sideIndex: sideIndex,
+          seconds: settings.work,
+          round: round,
+          exerciseIndex: idx
+        });
+      });
       var isLast = round === settings.rounds && idx === exercises.length - 1;
       if (!isLast) {
         var nextExercise = exercises[(idx + 1) % exercises.length];
-        steps.push({ type: "transition", label: "Transição", next: nextExercise.name, seconds: settings.transition, round: round });
+        steps.push({
+          type: "transition",
+          label: "Transição",
+          next: nextExercise.name,
+          nextSide: nextExercise.sides && nextExercise.sides.length ? nextExercise.sides[0] : null,
+          seconds: settings.transition,
+          round: round,
+          roundEnd: idx === exercises.length - 1,
+          exerciseIndex: idx
+        });
       }
     });
   }
@@ -707,10 +839,14 @@ function setCircuitPhase(state, index) {
   state.remainingMs = state.steps[index].seconds * 1000;
   state.endMs = Date.now() + state.remainingMs;
   state.complete = false;
+  state.lastBeepSecond = null;
+  state.endBeeped = false;
   updateCircuitPanel(state.mode);
 }
 
 function startCircuit(mode) {
+  requestWakeLock();
+  unlockAudio();
   var state = getCircuitState(mode);
   if (state.complete || state.current >= state.steps.length) {
     resetCircuit(mode);
@@ -738,8 +874,17 @@ function tickCircuit(mode) {
   if (!state.running) return;
   state.remainingMs = state.endMs - Date.now();
   if (state.remainingMs <= 0) {
+    if (!state.endBeeped) {
+      playCue("end");
+      state.endBeeped = true;
+    }
     nextCircuitStep(mode);
     return;
+  }
+  var remainingSecond = Math.ceil(state.remainingMs / 1000);
+  if (remainingSecond <= 10 && remainingSecond > 0 && remainingSecond !== state.lastBeepSecond) {
+    state.lastBeepSecond = remainingSecond;
+    playCue("tick");
   }
   updateCircuitPanel(mode);
 }
@@ -758,12 +903,19 @@ function nextCircuitStep(mode) {
   updateCircuitPanel(mode);
 }
 
+function restartCircuit(mode) {
+  resetCircuit(mode);
+  startCircuit(mode);
+}
+
 function finishCircuit(mode) {
   var state = getCircuitState(mode);
   clearInterval(state.interval);
   state.running = false;
   state.complete = true;
   state.remainingMs = 0;
+  releaseWakeLock();
+  playCue("complete");
   updateCircuitPanel(mode);
   completeWorkout(mode);
 }
@@ -771,6 +923,7 @@ function finishCircuit(mode) {
 function resetCircuit(mode) {
   var state = getCircuitState(mode);
   clearInterval(state.interval);
+  releaseWakeLock();
   circuitStates[mode] = {
     mode: mode,
     steps: buildCircuitSteps(mode),
@@ -779,7 +932,9 @@ function resetCircuit(mode) {
     remainingMs: 0,
     endMs: 0,
     interval: null,
-    complete: false
+    complete: false,
+    lastBeepSecond: null,
+    endBeeped: false
   };
   updateCircuitPanel(mode);
 }
@@ -796,9 +951,12 @@ function updateCircuitPanel(mode) {
   var currentEl = container.querySelector("[data-circuit-current]");
   var nextEl = container.querySelector("[data-circuit-next]");
   var startBtn = container.querySelector("[data-circuit-start]");
-  if (!panel || !timeEl || !circleEl || !phaseEl || !currentEl || !nextEl || !startBtn) return;
+  var restartBtn = container.querySelector("[data-circuit-reset]");
+  var skipBtn = container.querySelector("[data-circuit-skip]");
+  var closeBtn = container.querySelector("[data-circuit-close]");
+  if (!panel || !timeEl || !circleEl || !phaseEl || !currentEl || !nextEl || !startBtn || !restartBtn || !skipBtn || !closeBtn) return;
 
-  var active = state.running || state.remainingMs > 0 || state.complete;
+  var active = state.running || state.remainingMs > 0;
   panel.classList.toggle("active", active);
 
   var seconds = Math.ceil(Math.max(0, state.remainingMs) / 1000);
@@ -819,16 +977,28 @@ function updateCircuitPanel(mode) {
   if (state.complete) {
     phaseEl.textContent = "Concluído";
     currentEl.textContent = "Circuito curto registrado.";
-    nextEl.textContent = "Use Zerar para repetir.";
+    nextEl.textContent = "Use Reiniciar para repetir ou Fechar série para sair.";
     startBtn.textContent = "Iniciar";
+    restartBtn.textContent = "Reiniciar";
+    skipBtn.textContent = "Pular";
+    closeBtn.textContent = "Fechar série";
     return;
   }
 
   phaseEl.textContent = step.type === "work" ? "Rodada " + step.round + " · Trabalho" : "Rodada " + step.round + " · Transição";
-  currentEl.textContent = step.type === "work" ? step.label : "Prepare: " + step.next;
+  currentEl.textContent = step.type === "work"
+    ? step.label + (step.side ? " · " + exerciseSideLabel(step.side) : "")
+    : "Prepare: " + step.next + (step.nextSide ? " · " + exerciseSideLabel(step.nextSide) : "");
   var nextStep = state.steps[state.current + 1];
-  nextEl.textContent = nextStep ? "Próximo: " + (nextStep.type === "work" ? nextStep.label : "transição") : "Última estação";
+  nextEl.textContent = nextStep
+    ? "Próximo: " + (nextStep.type === "work"
+      ? nextStep.label + (nextStep.side ? " · " + exerciseSideLabel(nextStep.side) : "")
+      : (nextStep.roundEnd ? "fim da rodada" : "transição"))
+    : "Última estação";
   startBtn.textContent = state.running ? "Pausar" : (state.remainingMs > 0 ? "Continuar" : "Iniciar");
+  restartBtn.textContent = "Reiniciar";
+  skipBtn.textContent = "Pular";
+  closeBtn.textContent = "Fechar série";
 }
 
 function bindCircuit(mode) {
@@ -838,8 +1008,9 @@ function bindCircuit(mode) {
     var state = getCircuitState(mode);
     if (state.running) pauseCircuit(mode); else startCircuit(mode);
   });
-  container.querySelector("[data-circuit-next-btn]").addEventListener("click", function() { nextCircuitStep(mode); });
-  container.querySelector("[data-circuit-reset]").addEventListener("click", function() { resetCircuit(mode); });
+  container.querySelector("[data-circuit-reset]").addEventListener("click", function() { restartCircuit(mode); });
+  container.querySelector("[data-circuit-skip]").addEventListener("click", function() { nextCircuitStep(mode); });
+  container.querySelector("[data-circuit-close]").addEventListener("click", function() { resetCircuit(mode); });
   updateCircuitPanel(mode);
 }
 
@@ -881,7 +1052,12 @@ function logWorkout(mode) {
   localStorage.setItem("treino_log", JSON.stringify(log));
 }
 
-function completeWorkout(mode) { logWorkout(mode); showCelebration(); renderDashboard(); }
+function completeWorkout(mode) {
+  releaseWakeLock();
+  logWorkout(mode);
+  showCelebration();
+  renderDashboard();
+}
 
 function showCelebration() {
   var el = document.getElementById("celebrate");
@@ -971,9 +1147,20 @@ function showView(view, mode) {
     container.classList.toggle("visible", view === "workout" && container.id === "workout-" + mode);
   });
   document.getElementById("dashboard").classList.toggle("visible", view === "dashboard");
+  if (view === "dashboard") {
+    releaseWakeLock();
+  } else if (view === "workout") {
+    requestWakeLock();
+  }
   if (view === "dashboard") renderDashboard();
   if (view === "workout") localStorage.setItem("treino_selected", mode);
 }
+
+document.addEventListener("visibilitychange", function() {
+  if (document.visibilityState === "visible" && isWorkoutVisible()) {
+    requestWakeLock();
+  }
+});
 
 renderWorkout("curto");
 renderWorkout("longo");
