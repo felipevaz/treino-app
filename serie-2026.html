@@ -194,6 +194,8 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   transform: translateX(18px);
 }
 .circuit-actions { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px; }
+.circuit-actions.compact { grid-template-columns: 1fr 1fr; }
+.circuit-actions.compact .circuit-reset { display: none; }
 .circuit-panel.active .circuit-actions { width: min(360px, 100%); margin: 0 auto; }
 .circuit-start { background: #22c55e; }
 .circuit-reset { background: #94a3b8; color: #020617; }
@@ -488,6 +490,28 @@ function getWorkoutLabel(mode) {
   return "Treino longo";
 }
 
+function clearCircuitCountdown(state) {
+  clearInterval(state.countdownInterval);
+  state.countdownInterval = null;
+  state.countdownRunning = false;
+  state.countdownRemainingMs = 0;
+  state.countdownEndMs = 0;
+  state.countdownLastSecond = null;
+}
+
+function spawnCircuitCountdownNumber(panel, value) {
+  var ring = panel.querySelector(".circuit-ring");
+  if (!ring) return;
+  var el = document.createElement("div");
+  el.className = "timer-countdown-text";
+  el.style.top = "50%";
+  el.style.left = "50%";
+  el.style.transform = "translate(-50%, -50%)";
+  el.textContent = value;
+  el.addEventListener("animationend", function() { this.remove(); });
+  ring.appendChild(el);
+}
+
 /* ===== FORMAT ===== */
 function formatSec(s) {
   return (s < 0 ? "-" : "") + Math.abs(Math.round(s));
@@ -776,7 +800,7 @@ function renderShortWorkoutVariantPicker(container, variant) {
 function setShortWorkoutVariant(variant) {
   if (variant !== "a" && variant !== "b") return;
   var state = getCircuitState("curto");
-  if (state.running || state.remainingMs > 0) return;
+  if (state.running || state.remainingMs > 0 || state.countdownRunning) return;
   if (getShortWorkoutVariant() === variant) return;
   shortWorkoutVariant = variant;
   localStorage.setItem("treino_curto_variant", variant);
@@ -966,6 +990,11 @@ function getCircuitState(mode) {
       current: 0,
       running: false,
       remainingMs: 0,
+      countdownRunning: false,
+      countdownRemainingMs: 0,
+      countdownEndMs: 0,
+      countdownInterval: null,
+      countdownLastSecond: null,
       endMs: 0,
       interval: null,
       complete: false,
@@ -993,6 +1022,7 @@ function beginCircuit(mode) {
   requestWakeLock();
   unlockAudio();
   var state = getCircuitState(mode);
+  clearCircuitCountdown(state);
   if (state.complete || state.current >= state.steps.length) {
     resetCircuit(mode);
     state = getCircuitState(mode);
@@ -1005,8 +1035,46 @@ function beginCircuit(mode) {
   updateCircuitPanel(mode);
 }
 
-function startCircuit(mode) {
+function startCircuitCountdown(mode) {
+  var state = getCircuitState(mode);
   var settings = workoutSettings[mode] || {};
+  var countdownSeconds = settings.countdown || 3;
+  if (state.running || state.remainingMs > 0 || state.countdownRunning) return;
+  state.countdownRunning = true;
+  state.countdownRemainingMs = countdownSeconds * 1000;
+  state.countdownEndMs = Date.now() + state.countdownRemainingMs;
+  state.countdownLastSecond = null;
+  requestWakeLock();
+  unlockAudio();
+  updateCircuitPanel(mode);
+  clearInterval(state.countdownInterval);
+  state.countdownInterval = setInterval(function() { tickCircuitCountdown(mode); }, 100);
+  tickCircuitCountdown(mode);
+}
+
+function tickCircuitCountdown(mode) {
+  var state = getCircuitState(mode);
+  if (!state.countdownRunning) return;
+  state.countdownRemainingMs = state.countdownEndMs - Date.now();
+  var second = Math.ceil(state.countdownRemainingMs / 1000);
+  if (second > 0 && second <= 3 && second !== state.countdownLastSecond) {
+    state.countdownLastSecond = second;
+    playCue("countdown");
+    var container = document.getElementById("workout-" + mode);
+    if (container) {
+      var panel = container.querySelector(".circuit-panel");
+      if (panel) spawnCircuitCountdownNumber(panel, second);
+    }
+  }
+  updateCircuitPanel(mode);
+  if (state.countdownRemainingMs <= 0) {
+    clearCircuitCountdown(state);
+    updateCircuitPanel(mode);
+    beginCircuit(mode);
+  }
+}
+
+function startCircuit(mode) {
   var state = getCircuitState(mode);
   if (state.running) {
     pauseCircuit(mode);
@@ -1016,10 +1084,11 @@ function startCircuit(mode) {
     beginCircuit(mode);
     return;
   }
-  if (settings.countdown && !state.complete) {
-    openTimerModal(settings.countdown, function() {
-      beginCircuit(mode);
-    });
+  if (state.countdownRunning) {
+    return;
+  }
+  if (!state.complete) {
+    startCircuitCountdown(mode);
     return;
   }
   beginCircuit(mode);
@@ -1076,6 +1145,7 @@ function restartCircuit(mode) {
 function finishCircuit(mode) {
   var state = getCircuitState(mode);
   clearInterval(state.interval);
+  clearCircuitCountdown(state);
   state.running = false;
   state.complete = true;
   state.remainingMs = 0;
@@ -1088,6 +1158,7 @@ function finishCircuit(mode) {
 function resetCircuit(mode) {
   var state = getCircuitState(mode);
   clearInterval(state.interval);
+  clearCircuitCountdown(state);
   releaseWakeLock();
   circuitStates[state.key] = {
     mode: mode,
@@ -1096,6 +1167,11 @@ function resetCircuit(mode) {
     current: 0,
     running: false,
     remainingMs: 0,
+    countdownRunning: false,
+    countdownRemainingMs: 0,
+    countdownEndMs: 0,
+    countdownInterval: null,
+    countdownLastSecond: null,
     endMs: 0,
     interval: null,
     complete: false,
@@ -1143,11 +1219,15 @@ function updateCircuitPanel(mode) {
   var closeBtn = container.querySelector("[data-circuit-close]");
   if (!panel || !timeEl || !circleEl || !phaseEl || !currentEl || !nextEl || !startBtn || !restartBtn || !skipBtn || !closeBtn) return;
 
-  var active = state.running || state.remainingMs > 0;
+  var active = state.running || state.remainingMs > 0 || state.countdownRunning;
   panel.classList.toggle("active", active);
+  container.querySelector(".circuit-actions").classList.toggle("compact", !active && !state.complete);
 
   var seconds = Math.ceil(Math.max(0, state.remainingMs) / 1000);
-  timeEl.textContent = state.remainingMs > 0 ? formatSec(seconds) : "--";
+  var countdownSeconds = Math.ceil(Math.max(0, state.countdownRemainingMs) / 1000);
+  timeEl.textContent = state.countdownRunning
+    ? formatSec(countdownSeconds)
+    : (state.remainingMs > 0 ? formatSec(seconds) : "--");
   timeEl.classList.toggle("paused", !state.running && state.remainingMs > 0 && !state.complete);
   timeEl.classList.toggle("warn", state.running && seconds <= 10);
   circleEl.classList.toggle("warn", state.running && seconds <= 10);
@@ -1166,6 +1246,19 @@ function updateCircuitPanel(mode) {
   var g = Math.round(68 * t + 189 * (1 - t));
   var b = Math.round(68 * t + 248 * (1 - t));
   circleEl.style.stroke = state.complete ? "#22c55e" : "rgb(" + r + "," + g + "," + b + ")";
+
+  if (state.countdownRunning) {
+    phaseEl.textContent = "Preparando";
+    currentEl.textContent = "Começa em instantes";
+    nextEl.textContent = "Próximo: " + step.label + (step.side ? " · " + exerciseSideLabel(step.side) : "");
+    startBtn.textContent = "Aguarde";
+    startBtn.disabled = true;
+    startBtn.classList.add("blink");
+    restartBtn.textContent = "Reiniciar";
+    skipBtn.textContent = "Pular";
+    closeBtn.textContent = "×";
+    return;
+  }
 
   if (state.complete) {
     phaseEl.textContent = "Concluído";
@@ -1196,6 +1289,8 @@ function updateCircuitPanel(mode) {
     currentEl.textContent = currentText;
     nextEl.textContent = nextText;
   }
+  startBtn.disabled = false;
+  startBtn.classList.remove("blink");
   startBtn.textContent = state.running ? "Pausar" : (state.remainingMs > 0 ? "Continuar" : "Iniciar");
   restartBtn.textContent = "Reiniciar";
   skipBtn.textContent = "Pular";
