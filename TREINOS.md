@@ -4,19 +4,36 @@ Este arquivo é o registro humano para revisão periódica. O aplicativo em `ser
 
 ## Treino curto
 
-Usar em dias de pedalada mais forte, pernas cansadas ou pouco tempo. A sessão preserva estímulo de mobilidade, parte superior e core sem exigir o bloco completo de pernas.
+Usar em dias de pedalada mais forte, pernas cansadas ou pouco tempo. A sessão preserva estímulo de mobilidade, parte superior e core sem exigir o bloco completo de pernas. O app agora oferece dois curtos, A e B, para alternar em dias diferentes sem trocar a estrutura principal do treino.
 
 Formato atual no aplicativo: circuito intervalado, com 2 rodadas de 30 segundos de trabalho e 30 segundos de transição. A mobilidade vem antes do circuito e não entra no temporizador.
 Exercícios unilaterais aparecem em lados consecutivos, sem descanso entre um lado e outro.
+
+### Curto A
+
+Mais amigável para pernas e core, sem puxada vertical.
 
 | Ordem | Exercício | Repetições | Carga | Papel |
 |---:|---|---|---|---|
 | 1 | Mobilidade | Sequência | 0 kg | preparação |
 | 2 | Pallof Press | 10-12 / lado | elástico | anti-rotação |
-| 3 | Flexão de braço | 8-12 | peso corporal | empurrar |
-| 4 | Remada unilateral KB | 10-12 / lado | kettlebell 12 kg | puxar horizontal |
+| 3 | Subida no banco | 12 | peso corporal | pernas |
+| 4 | Flexão de braço | 8-12 | peso corporal | empurrar |
 | 5 | Hanging Knee Raise | 8-12 | peso corporal | core e controle da pelve |
 | 6 | Suitcase Carry | 30-45 s / lado | kettlebell | anti-flexão lateral, marcha e pegada |
+
+### Curto B
+
+Mais amigável para puxada e cadeia posterior, mantendo a barra fixa longe do Hanging Knee Raise.
+
+| Ordem | Exercício | Repetições | Carga | Papel |
+|---:|---|---|---|---|
+| 1 | Mobilidade | Sequência | 0 kg | preparação |
+| 2 | Pallof Press | 10-12 / lado | elástico | anti-rotação |
+| 3 | Barra fixa | 4 / 3 / 2 | peso corporal | puxar vertical |
+| 4 | Remada unilateral KB | 10-12 / lado | kettlebell 12 kg | puxar horizontal |
+| 5 | Levantamento terra KB | 12 | 15 kg | hinge e cadeia posterior |
+| 6 | Suitcase Carry | 30-45 s / lado | kettlebell | estabilidade integrada |
 
 ## Treino longo
 
@@ -37,6 +54,8 @@ Usar em dias de melhor recuperação. Inclui o treino curto ampliado com pernas,
 ## Regras de execução
 
 - Treino curto usa circuito de 2 rodadas, 30 segundos de trabalho e 30 segundos de transição.
+- Treino curto tem 2 variações: A e B. O A prioriza subida no banco, flexão, Hanging Knee Raise e Suitcase Carry; o B prioriza barra fixa, remada unilateral KB, levantamento terra KB e Suitcase Carry.
+- A barra fixa fica no curto B para não ficar próxima do Hanging Knee Raise.
 - Treino longo usa 3 séries de 40 segundos por exercício, com 30 segundos de descanso visual.
 - Exercícios com indicação `/ lado` no curto são feitos nos dois lados em sequência, sem descanso extra.
 - Hanging Knee Raise deve ser controlado, sem balanço, com retroversão leve da pelve no topo.
@@ -48,6 +67,7 @@ Usar em dias de melhor recuperação. Inclui o treino curto ampliado com pernas,
 
 - Rotação externa do antebraço e Sleeper Stretch ficam na rotina matinal.
 - Around the world é opcional, como aquecimento ou coordenação com kettlebell; não é requisito para concluir nenhum dos dois modos.
+- Subida com uma perna no banquinho pode ser uma boa alternativa ou substituição temporária para o agachamento unilateral. No curto A, ela já entrou como exercício principal.
 
 ## Revisão
 

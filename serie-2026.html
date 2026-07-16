@@ -318,6 +318,22 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   background: var(--tab); color: var(--muted); font-family: inherit; font-size: 0.95em; font-weight: 700;
 }
 .tab-btn.active { background: #22c55e; color: #020617; }
+.short-switcher {
+  display: grid; gap: 8px;
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 14px; margin-bottom: 14px;
+}
+.short-switcher-label { color: var(--muted); font-size: 0.85em; }
+.short-switcher-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.short-switch-btn {
+  background: var(--tab); color: var(--muted);
+  border: 1px solid transparent;
+}
+.short-switch-btn.active {
+  background: #22c55e; color: #020617;
+  border-color: #22c55e;
+}
+.short-switch-note { color: var(--muted); font-size: 0.82em; line-height: 1.3; }
 .home-btn {
   min-width: 46px; font-size: 1.05em;
   display: inline-grid; place-items: center;
@@ -405,15 +421,26 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 <script>
 /* ===== DATA ===== */
-const workouts = {
-  curto: [
+const shortWorkouts = {
+  a: [
     { name:"Mobilidade", reps:"Sequência", load:"0 kg", mobility:true, list:["Floppy arm - 10","Cat/cow - 10","Best stretch - 10"] },
     { name:"Pallof Press", reps:"10-12 / lado", load:"elástico", time:40, rest:30, sides:["E", "D"] },
+    { name:"Subida no banco", reps:"12", load:"peso corporal", time:40, rest:30 },
     { name:"Flexão de braço", reps:"8-12", load:"peso corporal", time:40, rest:30 },
-    { name:"Remada unilateral KB", reps:"10-12 / lado", load:"kettlebell 12 kg", time:40, rest:30, sides:["E", "D"] },
     { name:"Hanging Knee Raise", reps:"8-12", load:"peso corporal", time:40, rest:30 },
     { name:"Suitcase Carry", reps:"30-45 s / lado", load:"kettlebell", time:40, rest:30, sides:["E", "D"] }
   ],
+  b: [
+    { name:"Mobilidade", reps:"Sequência", load:"0 kg", mobility:true, list:["Floppy arm - 10","Cat/cow - 10","Best stretch - 10"] },
+    { name:"Pallof Press", reps:"10-12 / lado", load:"elástico", time:40, rest:30, sides:["E", "D"] },
+    { name:"Barra fixa", reps:"4 / 3 / 2", load:"peso corporal", time:40, rest:30 },
+    { name:"Remada unilateral KB", reps:"10-12 / lado", load:"kettlebell 12 kg", time:40, rest:30, sides:["E", "D"] },
+    { name:"Levantamento terra KB", reps:"12", load:"15 kg", time:40, rest:30 },
+    { name:"Suitcase Carry", reps:"30-45 s / lado", load:"kettlebell", time:40, rest:30, sides:["E", "D"] }
+  ]
+};
+
+const workouts = {
   longo: [
     { name:"Mobilidade", reps:"Sequência", load:"0 kg", mobility:true, list:["Floppy arm - 10","Cat/cow - 10","Best stretch - 10"] },
     { name:"Pallof Press", reps:"10-12 / lado", load:"elástico", time:40, rest:30, sides:["E", "D"] },
@@ -428,9 +455,38 @@ const workouts = {
 };
 
 const workoutSettings = {
-  curto: { circuit: true, work: 30, transition: 30, rounds: 2 },
+  curto: { circuit: true, work: 30, transition: 30, rounds: 2, countdown: 3 },
   longo: { circuit: false }
 };
+
+const shortWorkoutLabels = {
+  a: "Treino curto A",
+  b: "Treino curto B"
+};
+
+var shortWorkoutVariant = localStorage.getItem("treino_curto_variant") || "a";
+
+function getShortWorkoutVariant() {
+  return shortWorkouts[shortWorkoutVariant] ? shortWorkoutVariant : "a";
+}
+
+function getWorkoutExercises(mode) {
+  if (mode === "curto") return shortWorkouts[getShortWorkoutVariant()];
+  return workouts[mode] || [];
+}
+
+function getWorkoutStorageMode(mode) {
+  return mode === "curto" ? "curto_" + getShortWorkoutVariant() : mode;
+}
+
+function getCircuitStateKey(mode) {
+  return mode === "curto" ? "curto_" + getShortWorkoutVariant() : mode;
+}
+
+function getWorkoutLabel(mode) {
+  if (mode === "curto") return shortWorkoutLabels[getShortWorkoutVariant()];
+  return "Treino longo";
+}
 
 /* ===== FORMAT ===== */
 function formatSec(s) {
@@ -704,31 +760,67 @@ function exerciseSideLabel(side) {
   return side || "";
 }
 
+function renderShortWorkoutVariantPicker(container, variant) {
+  var picker = document.createElement("div");
+  picker.className = "short-switcher";
+  picker.innerHTML =
+    '<div class="short-switcher-label">Escolha o treino curto</div>' +
+    '<div class="short-switcher-row">' +
+      '<button type="button" class="short-switch-btn' + (variant === "a" ? " active" : "") + '" data-short-variant="a">' + shortWorkoutLabels.a + '</button>' +
+      '<button type="button" class="short-switch-btn' + (variant === "b" ? " active" : "") + '" data-short-variant="b">' + shortWorkoutLabels.b + '</button>' +
+    '</div>' +
+    '<div class="short-switch-note">A e B usam o mesmo circuito, mas com distribuição diferente dos exercícios conhecidos.</div>';
+  container.appendChild(picker);
+}
+
+function setShortWorkoutVariant(variant) {
+  if (variant !== "a" && variant !== "b") return;
+  var state = getCircuitState("curto");
+  if (state.running || state.remainingMs > 0) return;
+  if (getShortWorkoutVariant() === variant) return;
+  shortWorkoutVariant = variant;
+  localStorage.setItem("treino_curto_variant", variant);
+  var currentView = document.getElementById("dashboard").classList.contains("visible") ? "dashboard" : "workout";
+  renderWorkout("curto");
+  bindCircuit("curto");
+  setupPersistence("curto");
+  showView(currentView, currentView === "workout" ? "curto" : undefined);
+}
+
 /* ===== RENDER ===== */
 const app = document.getElementById("app");
 
 function renderWorkout(mode) {
-  var exercises = workouts[mode];
+  var exercises = getWorkoutExercises(mode);
   var settings = workoutSettings[mode] || {};
+  var oldContainer = document.getElementById("workout-" + mode);
+  var wasVisible = oldContainer && oldContainer.classList.contains("visible");
+  if (oldContainer) oldContainer.remove();
   var container = document.createElement("div");
   container.className = "workout";
+  if (wasVisible) container.classList.add("visible");
   container.id = "workout-" + mode;
+
+  if (mode === "curto") {
+    renderShortWorkoutVariantPicker(container, getShortWorkoutVariant());
+  }
 
   if (settings.circuit) {
     var timedCount = exercises.filter(function(ex) { return !ex.mobility; }).reduce(function(total, ex) {
       return total + (ex.sides && ex.sides.length ? ex.sides.length : 1);
     }, 0);
+    var firstExercise = exercises.filter(function(ex) { return !ex.mobility; })[0];
     var panel = document.createElement("div");
     panel.className = "circuit-panel";
     panel.innerHTML =
       '<div class="circuit-kicker">Circuito intervalado</div>' +
-      '<div class="circuit-title">Treino curto guiado por tempo</div>' +
+      '<div class="circuit-title">' + getWorkoutLabel(mode) + ' guiado por tempo</div>' +
       '<div class="circuit-meta">' + settings.rounds + ' rodadas · ' + timedCount + ' estações · ' + settings.work + 's trabalho / ' + settings.transition + 's transição</div>' +
       '<button class="circuit-exit" data-circuit-close aria-label="Fechar série">×</button>' +
       '<div class="circuit-display">' +
         '<div class="circuit-info">' +
           '<div class="circuit-phase" data-circuit-phase>Pronto</div>' +
-          '<div class="circuit-next" data-circuit-next>Próximo: Pallof Press</div>' +
+          '<div class="circuit-next" data-circuit-next>Próximo: ' + (firstExercise ? firstExercise.name : "-") + '</div>' +
         '</div>' +
         '<div class="circuit-ring" aria-live="polite">' +
           '<svg class="circuit-circle-svg" viewBox="0 0 240 240" aria-hidden="true">' +
@@ -786,10 +878,18 @@ function renderWorkout(mode) {
   finishBtn.textContent = "Concluir treino";
   finishBtn.addEventListener("click", function() { completeWorkout(mode); });
   container.appendChild(finishBtn);
+
+  if (mode === "curto") {
+    container.querySelectorAll("[data-short-variant]").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        setShortWorkoutVariant(btn.dataset.shortVariant);
+      });
+    });
+  }
 }
 
 function bindButtons(mode) {
-  var exercises = workouts[mode];
+  var exercises = getWorkoutExercises(mode);
   var settings = workoutSettings[mode] || {};
   if (settings.circuit) return;
   var container = document.getElementById("workout-" + mode);
@@ -816,7 +916,7 @@ function bindButtons(mode) {
 var circuitStates = {};
 
 function getCircuitExercises(mode) {
-  return workouts[mode].filter(function(ex) { return !ex.mobility; });
+  return getWorkoutExercises(mode).filter(function(ex) { return !ex.mobility; });
 }
 
 function buildCircuitSteps(mode) {
@@ -857,9 +957,11 @@ function buildCircuitSteps(mode) {
 }
 
 function getCircuitState(mode) {
-  if (!circuitStates[mode]) {
-    circuitStates[mode] = {
+  var key = getCircuitStateKey(mode);
+  if (!circuitStates[key]) {
+    circuitStates[key] = {
       mode: mode,
+      key: key,
       steps: buildCircuitSteps(mode),
       current: 0,
       running: false,
@@ -874,7 +976,7 @@ function getCircuitState(mode) {
       _textLockedUntil: 0
     };
   }
-  return circuitStates[mode];
+  return circuitStates[key];
 }
 
 function setCircuitPhase(state, index) {
@@ -887,7 +989,7 @@ function setCircuitPhase(state, index) {
   updateCircuitPanel(state.mode);
 }
 
-function startCircuit(mode) {
+function beginCircuit(mode) {
   requestWakeLock();
   unlockAudio();
   var state = getCircuitState(mode);
@@ -901,6 +1003,26 @@ function startCircuit(mode) {
   clearInterval(state.interval);
   state.interval = setInterval(function() { tickCircuit(mode); }, 100);
   updateCircuitPanel(mode);
+}
+
+function startCircuit(mode) {
+  var settings = workoutSettings[mode] || {};
+  var state = getCircuitState(mode);
+  if (state.running) {
+    pauseCircuit(mode);
+    return;
+  }
+  if (state.remainingMs > 0) {
+    beginCircuit(mode);
+    return;
+  }
+  if (settings.countdown && !state.complete) {
+    openTimerModal(settings.countdown, function() {
+      beginCircuit(mode);
+    });
+    return;
+  }
+  beginCircuit(mode);
 }
 
 function pauseCircuit(mode) {
@@ -967,8 +1089,9 @@ function resetCircuit(mode) {
   var state = getCircuitState(mode);
   clearInterval(state.interval);
   releaseWakeLock();
-  circuitStates[mode] = {
+  circuitStates[state.key] = {
     mode: mode,
+    key: state.key,
     steps: buildCircuitSteps(mode),
     current: 0,
     running: false,
@@ -1083,8 +1206,7 @@ function bindCircuit(mode) {
   if (!(workoutSettings[mode] || {}).circuit) return;
   var container = document.getElementById("workout-" + mode);
   container.querySelector("[data-circuit-start]").addEventListener("click", function() {
-    var state = getCircuitState(mode);
-    if (state.running) pauseCircuit(mode); else startCircuit(mode);
+    startCircuit(mode);
   });
   container.querySelector("[data-circuit-reset]").addEventListener("click", function() { restartCircuit(mode); });
   container.querySelector("[data-circuit-skip]").addEventListener("click", function() { nextCircuitStep(mode); });
@@ -1100,9 +1222,10 @@ function setupPersistence(mode) {
     var repsEl = spans[0], loadEl = spans[1];
     var obsEl = box.querySelector(".obs[contenteditable]");
     if (!obsEl) return;
-    var prefix = "treino_" + mode + "_";
+    var storageMode = getWorkoutStorageMode(mode);
+    var prefix = "treino_" + storageMode + "_";
     var legacyIndex = mode === "longo" ? [0, 1, 2, 3, 6, 7, 8, 9][i] : i;
-    var legacyPrefixes = mode === "longo" ? ["treino_", "treinoA_"] : ["treinoB_"];
+    var legacyPrefixes = mode === "longo" ? ["treino_", "treinoA_"] : (storageMode === "curto_a" ? ["treino_curto_"] : []);
     var savedReps = localStorage.getItem(prefix + "reps_" + i);
     var savedLoad = localStorage.getItem(prefix + "load_" + i);
     var savedObs = localStorage.getItem(prefix + "obs_" + i);
