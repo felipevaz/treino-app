@@ -17,7 +17,7 @@ Mais amigável para pernas e core, sem puxada vertical.
 |---:|---|---|---|---|
 | 1 | Mobilidade | Sequência | 0 kg | preparação |
 | 2 | Pallof Press | 10-12 / lado | elástico | anti-rotação |
-| 3 | Subida no banco | 12 | peso corporal | pernas |
+| 3 | Subida no banco | 12 / lado | peso corporal | pernas |
 | 4 | Flexão de braço | 8-12 | peso corporal | empurrar |
 | 5 | Hanging Knee Raise | 8-12 | peso corporal | core e controle da pelve |
 | 6 | Suitcase Carry | 30-45 s / lado | kettlebell | anti-flexão lateral, marcha e pegada |
@@ -58,6 +58,7 @@ Usar em dias de melhor recuperação. Inclui o treino curto ampliado com pernas,
 - A barra fixa fica no curto B para não ficar próxima do Hanging Knee Raise.
 - Treino longo usa 3 séries de 40 segundos por exercício, com 30 segundos de descanso visual.
 - Exercícios com indicação `/ lado` no curto são feitos nos dois lados em sequência, sem descanso extra.
+- Subida no banco é feita com uma perna de cada vez, 12 repetições por lado, em lados consecutivos e sem descanso extra.
 - Hanging Knee Raise deve ser controlado, sem balanço, com retroversão leve da pelve no topo.
 - Suitcase Carry: postura ereta, costelas controladas, sem inclinar o tronco para o lado da carga.
 - Pallof Press e Suitcase Carry são complementares; no circuito curto, ambos aparecem, mas a intensidade deve ser ajustada pela técnica.
