@@ -428,17 +428,18 @@ const shortWorkouts = {
     { name:"Mobilidade", reps:"Sequência", load:"0 kg", mobility:true, list:["Floppy arm - 10","Cat/cow - 10","Best stretch - 10"] },
     { name:"Pallof Press", reps:"10-12 / lado", load:"elástico", time:40, rest:30, sides:["E", "D"] },
     { name:"Subida no banco", reps:"12 / lado", load:"peso corporal", time:40, rest:30, sides:["E", "D"] },
-    { name:"Flexão de braço", reps:"8-12", load:"peso corporal", time:40, rest:30 },
     { name:"Hanging Knee Raise", reps:"8-12", load:"peso corporal", time:40, rest:30 },
-    { name:"Suitcase Carry", reps:"30-45 s / lado", load:"kettlebell", time:40, rest:30, sides:["E", "D"] }
+    { name:"Suitcase Carry", reps:"30-45 s / lado", load:"kettlebell", time:40, rest:30, sides:["E", "D"] },
+    { name:"Flexão de braço", reps:"8-12", load:"peso corporal", time:40, rest:30 }
   ],
   b: [
     { name:"Mobilidade", reps:"Sequência", load:"0 kg", mobility:true, list:["Floppy arm - 10","Cat/cow - 10","Best stretch - 10"] },
     { name:"Pallof Press", reps:"10-12 / lado", load:"elástico", time:40, rest:30, sides:["E", "D"] },
-    { name:"Barra fixa", reps:"4 / 3 / 2", load:"peso corporal", time:40, rest:30 },
     { name:"Remada unilateral KB", reps:"10-12 / lado", load:"kettlebell 12 kg", time:40, rest:30, sides:["E", "D"] },
     { name:"Levantamento terra KB", reps:"12", load:"15 kg", time:40, rest:30 },
-    { name:"Suitcase Carry", reps:"30-45 s / lado", load:"kettlebell", time:40, rest:30, sides:["E", "D"] }
+    { name:"Suitcase Carry", reps:"30-45 s / lado", load:"kettlebell", time:40, rest:30, sides:["E", "D"] },
+    { name:"Reverse Crunch", reps:"8-12", load:"peso corporal", time:40, rest:30 },
+    { name:"Barra fixa", reps:"4 / 3 / 2", load:"peso corporal", time:40, rest:30 }
   ]
 };
 
@@ -457,7 +458,7 @@ const workouts = {
 };
 
 const workoutSettings = {
-  curto: { circuit: true, work: 30, transition: 30, rounds: 2, countdown: 3 },
+  curto: { circuit: true, work: 30, transition: 30, sideTransition: 10, rounds: 2, countdown: 3 },
   longo: { circuit: false }
 };
 
@@ -594,6 +595,10 @@ function playCue(kind) {
     setTimeout(function() { playTone(1040, 60, 0.05, "square"); }, 90);
     return;
   }
+  if (kind === "circuit-start") {
+    playTone(1200, 55, 0.065, "square");
+    return;
+  }
   if (kind === "end") {
     playTone(660, 80, 0.05, "triangle");
     setTimeout(function() { playTone(988, 100, 0.05, "triangle"); }, 120);
@@ -621,12 +626,16 @@ function speakCircuitStep(step) {
   if (!step) return;
   if (step.type === "work") {
     var text = step.label;
-    if (step.side) text += ". Lado " + exerciseSideLabel(step.side);
+    if (step.side) text += ". " + exerciseSideLabel(step.side);
     speak(text);
     return;
   }
+  if (step.sideChange) {
+    speak("mudança de lado");
+    return;
+  }
   var transitionText = "Transição. Próximo: " + step.next;
-  if (step.nextSide) transitionText += ". Lado " + exerciseSideLabel(step.nextSide);
+  if (step.nextSide) transitionText += ". " + exerciseSideLabel(step.nextSide);
   speak(transitionText);
 }
 
@@ -985,6 +994,19 @@ function buildCircuitSteps(mode) {
           round: round,
           exerciseIndex: idx
         });
+        if (sideIndex < sides.length - 1) {
+          steps.push({
+            type: "transition",
+            label: "mudança de lado",
+            next: ex.name,
+            nextSide: sides[sideIndex + 1],
+            seconds: settings.sideTransition,
+            sideChange: true,
+            round: round,
+            roundEnd: false,
+            exerciseIndex: idx
+          });
+        }
       });
       var isLast = round === settings.rounds && idx === exercises.length - 1;
       if (!isLast) {
@@ -1059,7 +1081,10 @@ function beginCircuit(mode) {
   state.endMs = Date.now() + state.remainingMs;
   clearInterval(state.interval);
   state.interval = setInterval(function() { tickCircuit(mode); }, 100);
-  if (announceStep) speakCircuitStep(state.steps[state.current]);
+  if (announceStep) {
+    playCue("circuit-start");
+    speakCircuitStep(state.steps[state.current]);
+  }
   updateCircuitPanel(mode);
 }
 
@@ -1087,7 +1112,6 @@ function tickCircuitCountdown(mode) {
   var second = Math.ceil(state.countdownRemainingMs / 1000);
   if (second > 0 && second <= 3 && second !== state.countdownLastSecond) {
     state.countdownLastSecond = second;
-    playCue("countdown");
     var container = document.getElementById("workout-" + mode);
     if (container) {
       var panel = container.querySelector(".circuit-panel");
@@ -1136,17 +1160,8 @@ function tickCircuit(mode) {
   if (!state.running) return;
   state.remainingMs = state.endMs - Date.now();
   if (state.remainingMs <= 0) {
-    if (!state.endBeeped) {
-      playCue("end");
-      state.endBeeped = true;
-    }
     nextCircuitStep(mode);
     return;
-  }
-  var remainingSecond = Math.ceil(state.remainingMs / 1000);
-  if (remainingSecond <= 10 && remainingSecond > 0 && remainingSecond !== state.lastBeepSecond) {
-    state.lastBeepSecond = remainingSecond;
-    playCue("tick");
   }
   updateCircuitPanel(mode);
 }
@@ -1162,6 +1177,7 @@ function nextCircuitStep(mode) {
   if (state.running) {
     state.endMs = Date.now() + state.remainingMs;
   }
+  playCue("circuit-start");
   speakCircuitStep(state.steps[state.current]);
   updateCircuitPanel(mode);
 }
@@ -1305,7 +1321,7 @@ function updateCircuitPanel(mode) {
   var phaseText = step.type === "work" ? "Rodada " + step.round + " · Trabalho" : "Rodada " + step.round + " · Transição";
   var currentText = step.type === "work"
     ? step.label + (step.side ? " · " + exerciseSideLabel(step.side) : "")
-    : "Prepare: " + step.next + (step.nextSide ? " · " + exerciseSideLabel(step.nextSide) : "");
+    : (step.sideChange ? step.label : "Prepare: " + step.next + (step.nextSide ? " · " + exerciseSideLabel(step.nextSide) : ""));
   var nextStep = state.steps[state.current + 1];
   var nextText = nextStep
     ? "Próximo: " + (nextStep.type === "work"

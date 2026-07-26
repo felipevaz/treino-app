@@ -6,8 +6,8 @@ Este arquivo é o registro humano para revisão periódica. O aplicativo em `ser
 
 Usar em dias de pedalada mais forte, pernas cansadas ou pouco tempo. A sessão preserva estímulo de mobilidade, parte superior e core sem exigir o bloco completo de pernas. O app agora oferece dois curtos, A e B, para alternar em dias diferentes sem trocar a estrutura principal do treino.
 
-Formato atual no aplicativo: circuito intervalado, com 2 rodadas de 30 segundos de trabalho e 30 segundos de transição. A entrada dos curtos usa um countdown de 3 segundos integrado ao próprio painel do circuito. A mobilidade vem antes do circuito e não entra no temporizador.
-Exercícios unilaterais aparecem em lados consecutivos, sem descanso entre um lado e outro.
+Formato atual no aplicativo: circuito intervalado, com 2 rodadas de 30 segundos de trabalho e 30 segundos de transição. Exercícios unilaterais têm 10 segundos de mudança de lado. A entrada dos curtos usa um countdown de 3 segundos integrado ao próprio painel do circuito. A mobilidade vem antes do circuito e não entra no temporizador.
+O circuito curto emite um único bip curto e agudo no início de cada exercício ou transição. A mudança de lado é anunciada pelo TTS e pelo título exatamente como “mudança de lado”.
 
 ### Curto A
 
@@ -18,9 +18,9 @@ Mais amigável para pernas e core, sem puxada vertical.
 | 1 | Mobilidade | Sequência | 0 kg | preparação |
 | 2 | Pallof Press | 10-12 / lado | elástico | anti-rotação |
 | 3 | Subida no banco | 12 / lado | peso corporal | pernas |
-| 4 | Flexão de braço | 8-12 | peso corporal | empurrar |
-| 5 | Hanging Knee Raise | 8-12 | peso corporal | core e controle da pelve |
-| 6 | Suitcase Carry | 30-45 s / lado | kettlebell | anti-flexão lateral, marcha e pegada |
+| 4 | Hanging Knee Raise | 8-12 | peso corporal | core e controle da pelve |
+| 5 | Suitcase Carry | 30-45 s / lado | kettlebell | anti-flexão lateral, marcha e pegada |
+| 6 | Flexão de braço | 8-12 | peso corporal | empurrar, final da rodada |
 
 ### Curto B
 
@@ -30,10 +30,11 @@ Mais amigável para puxada e cadeia posterior, mantendo a barra fixa longe do Ha
 |---:|---|---|---|---|
 | 1 | Mobilidade | Sequência | 0 kg | preparação |
 | 2 | Pallof Press | 10-12 / lado | elástico | anti-rotação |
-| 3 | Barra fixa | 4 / 3 / 2 | peso corporal | puxar vertical |
-| 4 | Remada unilateral KB | 10-12 / lado | kettlebell 12 kg | puxar horizontal |
-| 5 | Levantamento terra KB | 12 | 15 kg | hinge e cadeia posterior |
-| 6 | Suitcase Carry | 30-45 s / lado | kettlebell | estabilidade integrada |
+| 3 | Remada unilateral KB | 10-12 / lado | kettlebell 12 kg | puxar horizontal |
+| 4 | Levantamento terra KB | 12 | 15 kg | hinge e cadeia posterior |
+| 5 | Suitcase Carry | 30-45 s / lado | kettlebell | estabilidade integrada |
+| 6 | Reverse Crunch | 8-12 | peso corporal | flexão da pelve e abdômen |
+| 7 | Barra fixa | 4 / 3 / 2 | peso corporal | puxar vertical, final da rodada |
 
 ## Treino longo
 
@@ -53,13 +54,15 @@ Usar em dias de melhor recuperação. Inclui o treino curto ampliado com pernas,
 
 ## Regras de execução
 
-- Treino curto usa circuito de 2 rodadas, 30 segundos de trabalho e 30 segundos de transição.
-- Treino curto tem 2 variações: A e B. O A prioriza subida no banco, flexão, Hanging Knee Raise e Suitcase Carry; o B prioriza barra fixa, remada unilateral KB, levantamento terra KB e Suitcase Carry.
+- Treino curto usa circuito de 2 rodadas, 30 segundos de trabalho e 30 segundos de transição; entre lados do mesmo exercício há 10 segundos de mudança de lado.
+- Treino curto tem 2 variações: A e B. O A prioriza subida no banco, flexão, Hanging Knee Raise e Suitcase Carry; o B prioriza remada unilateral KB, levantamento terra KB, Reverse Crunch, Suitcase Carry e barra fixa.
 - A barra fixa fica no curto B para não ficar próxima do Hanging Knee Raise.
 - Treino longo usa 3 séries de 40 segundos por exercício, com 30 segundos de descanso visual.
-- Exercícios com indicação `/ lado` no curto são feitos nos dois lados em sequência, sem descanso extra.
-- Subida no banco é feita com uma perna de cada vez, 12 repetições por lado, em lados consecutivos e sem descanso extra.
+- Exercícios com indicação `/ lado` no curto são feitos nos dois lados, com 10 segundos de mudança de lado.
+- Subida no banco é feita com uma perna de cada vez, 12 repetições por lado, com 10 segundos de mudança de lado.
+- Flexão de braço no curto A e barra fixa no curto B ficam no final da rodada, para que a segunda rodada possa ser levada até a exaustão técnica.
 - Hanging Knee Raise deve ser controlado, sem balanço, com retroversão leve da pelve no topo.
+- Reverse Crunch: manter os joelhos dobrados, enrolar a pelve em direção às costelas e elevar levemente o cóccix, sem impulso das pernas.
 - Suitcase Carry: postura ereta, costelas controladas, sem inclinar o tronco para o lado da carga.
 - Pallof Press e Suitcase Carry são complementares; no circuito curto, ambos aparecem, mas a intensidade deve ser ajustada pela técnica.
 - Em pedalada forte, escolher o curto. Em pedalada leve ou recuperação boa, escolher o longo.
