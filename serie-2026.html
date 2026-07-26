@@ -1112,6 +1112,7 @@ function tickCircuitCountdown(mode) {
   var second = Math.ceil(state.countdownRemainingMs / 1000);
   if (second > 0 && second <= 3 && second !== state.countdownLastSecond) {
     state.countdownLastSecond = second;
+    playCue("countdown");
     var container = document.getElementById("workout-" + mode);
     if (container) {
       var panel = container.querySelector(".circuit-panel");
@@ -1162,6 +1163,11 @@ function tickCircuit(mode) {
   if (state.remainingMs <= 0) {
     nextCircuitStep(mode);
     return;
+  }
+  var remainingSecond = Math.ceil(state.remainingMs / 1000);
+  if (remainingSecond <= 10 && remainingSecond > 0 && remainingSecond !== state.lastBeepSecond) {
+    state.lastBeepSecond = remainingSecond;
+    playCue("tick");
   }
   updateCircuitPanel(mode);
 }

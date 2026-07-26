@@ -7,7 +7,7 @@ Este arquivo é o registro humano para revisão periódica. O aplicativo em `ser
 Usar em dias de pedalada mais forte, pernas cansadas ou pouco tempo. A sessão preserva estímulo de mobilidade, parte superior e core sem exigir o bloco completo de pernas. O app agora oferece dois curtos, A e B, para alternar em dias diferentes sem trocar a estrutura principal do treino.
 
 Formato atual no aplicativo: circuito intervalado, com 2 rodadas de 30 segundos de trabalho e 30 segundos de transição. Exercícios unilaterais têm 10 segundos de mudança de lado. A entrada dos curtos usa um countdown de 3 segundos integrado ao próprio painel do circuito. A mobilidade vem antes do circuito e não entra no temporizador.
-O circuito curto emite um único bip curto e agudo no início de cada exercício ou transição. A mudança de lado é anunciada pelo TTS e pelo título exatamente como “mudança de lado”.
+O countdown inicial de 3 segundos mantém um bip a cada número. Depois dele, o circuito curto emite um único bip curto e agudo no início de cada exercício ou transição, além de um bip por segundo nos 10 segundos finais de cada fase. A mudança de lado é anunciada pelo TTS e pelo título exatamente como “mudança de lado”.
 
 ### Curto A
 
