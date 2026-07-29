@@ -1395,7 +1395,8 @@ function setupPersistence(mode) {
 function logWorkout(mode) {
   var log = JSON.parse(localStorage.getItem("treino_log") || "[]");
   var today = new Date().toISOString().slice(0, 10);
-  var entry = { date: today, type: mode, completedAt: new Date().toISOString() };
+  var type = mode === "curto" ? "curto_" + getShortWorkoutVariant() : mode;
+  var entry = { date: today, type: type, completedAt: new Date().toISOString() };
   var idx = log.findIndex(function(e) { return e.date === today; });
   if (idx >= 0) log[idx] = entry; else log.push(entry);
   localStorage.setItem("treino_log", JSON.stringify(log));
@@ -1452,15 +1453,21 @@ function readHistory() {
 }
 
 function displayType(type) {
-  if (type === "A") return "longo";
-  if (type === "B") return "curto";
+  if (type === "A" || type === "longo") return "treino longo";
+  if (type === "curto_a") return "curto A";
+  if (type === "curto_b") return "curto B";
+  if (type === "B" || type === "curto") return "treino curto";
   return type;
+}
+
+function isShortLogType(type) {
+  return type === "B" || type === "curto" || type === "curto_a" || type === "curto_b";
 }
 
 function renderDashboard() {
   var log = readHistory();
   var normalized = log.map(function(entry) {
-    return { date: entry.date, type: displayType(entry.type), completedAt: entry.completedAt };
+    return { date: entry.date, type: entry.type, label: displayType(entry.type), completedAt: entry.completedAt };
   });
   var last = normalized[normalized.length - 1];
   var days = [];
@@ -1475,7 +1482,7 @@ function renderDashboard() {
   dash.innerHTML =
     '<div class="dash-grid">' +
       '<div class="dash-card"><div class="dash-card-title">Total de treinos</div><div class="dash-value">' + normalized.length + '</div></div>' +
-      '<div class="dash-card"><div class="dash-card-title">Último treino</div><div class="dash-value">' + (last ? last.type : "-") + '</div></div>' +
+      '<div class="dash-card"><div class="dash-card-title">Último treino</div><div class="dash-value">' + (last ? last.label : "-") + '</div></div>' +
     '</div>' +
     '<div class="dash-card"><div class="dash-card-title">Últimos 7 dias</div><div class="dash-days">' +
       days.map(function(day) {
@@ -1483,7 +1490,7 @@ function renderDashboard() {
         return '<div class="dash-day">' + label + '<div class="dash-dot' + (day.done ? ' done' : '') + '">' + (day.done ? '✓' : '·') + '</div></div>';
       }).join("") +
     '</div></div>' +
-    '<div class="dash-card"><div class="dash-card-title">Distribuição</div><div>Curto: ' + normalized.filter(function(e) { return e.type === "curto"; }).length + '</div><div>Longo: ' + normalized.filter(function(e) { return e.type === "longo"; }).length + '</div></div>' +
+    '<div class="dash-card"><div class="dash-card-title">Distribuição</div><div>Curto: ' + normalized.filter(function(e) { return isShortLogType(e.type); }).length + '</div><div>Longo: ' + normalized.filter(function(e) { return e.type === "A" || e.type === "longo"; }).length + '</div></div>' +
     '<button class="dash-actions" id="btn-export-history">Exportar histórico (CSV)</button>';
   document.getElementById("btn-export-history").addEventListener("click", exportHistory);
 }
