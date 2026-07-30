@@ -612,31 +612,39 @@ function playCue(kind) {
 
 var ttsEnabled = true;
 
-function speak(text) {
-  if (!ttsEnabled || !("speechSynthesis" in window)) return;
+function speak(text, done) {
+  if (!ttsEnabled || !("speechSynthesis" in window)) {
+    if (done) done();
+    return;
+  }
   window.speechSynthesis.cancel();
   var utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "pt-BR";
   utterance.rate = 1.05;
   utterance.pitch = 1;
+  utterance.onend = done;
+  utterance.onerror = done;
   window.speechSynthesis.speak(utterance);
 }
 
-function speakCircuitStep(step) {
-  if (!step) return;
+function speakCircuitStep(step, done) {
+  if (!step) {
+    if (done) done();
+    return;
+  }
   if (step.type === "work") {
     var text = step.label;
     if (step.side) text += ". " + exerciseSideLabel(step.side);
-    speak(text);
+    speak(text, done);
     return;
   }
   if (step.sideChange) {
-    speak("mudança de lado");
+    speak("mudança de lado", done);
     return;
   }
   var transitionText = "Transição. Próximo: " + step.next;
   if (step.nextSide) transitionText += ". " + exerciseSideLabel(step.nextSide);
-  speak(transitionText);
+  speak(transitionText, done);
 }
 
 /* ===== TIMER MODAL ===== */
@@ -1049,7 +1057,9 @@ function getCircuitState(mode) {
       endBeeped: false,
       _lastUiStepIndex: null,
       _textTimer: null,
-      _textLockedUntil: 0
+      _textLockedUntil: 0,
+      waitingForSpeech: false,
+      speechToken: 0
     };
   }
   return circuitStates[key];
@@ -1058,11 +1068,30 @@ function getCircuitState(mode) {
 function setCircuitPhase(state, index) {
   state.current = index;
   state.remainingMs = state.steps[index].seconds * 1000;
-  state.endMs = Date.now() + state.remainingMs;
+  state.endMs = 0;
   state.complete = false;
   state.lastBeepSecond = null;
   state.endBeeped = false;
   updateCircuitPanel(state.mode);
+}
+
+function startCircuitPhase(mode) {
+  var state = getCircuitState(mode);
+  var token = ++state.speechToken;
+  state.running = false;
+  state.waitingForSpeech = true;
+  clearInterval(state.interval);
+  playCue("circuit-start");
+  speakCircuitStep(state.steps[state.current], function() {
+    var currentState = getCircuitState(mode);
+    if (currentState !== state || currentState.speechToken !== token || !state.waitingForSpeech) return;
+    state.waitingForSpeech = false;
+    state.running = true;
+    state.endMs = Date.now() + state.remainingMs;
+    state.interval = setInterval(function() { tickCircuit(mode); }, 100);
+    updateCircuitPanel(mode);
+  });
+  updateCircuitPanel(mode);
 }
 
 function beginCircuit(mode) {
@@ -1077,14 +1106,14 @@ function beginCircuit(mode) {
     announceStep = true;
   }
   if (state.remainingMs <= 0) setCircuitPhase(state, state.current);
+  if (announceStep) {
+    startCircuitPhase(mode);
+    return;
+  }
   state.running = true;
   state.endMs = Date.now() + state.remainingMs;
   clearInterval(state.interval);
   state.interval = setInterval(function() { tickCircuit(mode); }, 100);
-  if (announceStep) {
-    playCue("circuit-start");
-    speakCircuitStep(state.steps[state.current]);
-  }
   updateCircuitPanel(mode);
 }
 
@@ -1129,6 +1158,7 @@ function tickCircuitCountdown(mode) {
 
 function startCircuit(mode) {
   var state = getCircuitState(mode);
+  if (state.waitingForSpeech) return;
   if (state.running) {
     pauseCircuit(mode);
     return;
@@ -1149,7 +1179,7 @@ function startCircuit(mode) {
 
 function pauseCircuit(mode) {
   var state = getCircuitState(mode);
-  if (!state.running) return;
+  if (!state.running || state.waitingForSpeech) return;
   state.remainingMs = Math.max(0, state.endMs - Date.now());
   state.running = false;
   clearInterval(state.interval);
@@ -1180,12 +1210,7 @@ function nextCircuitStep(mode) {
     return;
   }
   setCircuitPhase(state, state.current + 1);
-  if (state.running) {
-    state.endMs = Date.now() + state.remainingMs;
-  }
-  playCue("circuit-start");
-  speakCircuitStep(state.steps[state.current]);
-  updateCircuitPanel(mode);
+  startCircuitPhase(mode);
 }
 
 function restartCircuit(mode) {
@@ -1232,7 +1257,9 @@ function resetCircuit(mode) {
     endBeeped: false,
     _lastUiStepIndex: null,
     _textTimer: null,
-    _textLockedUntil: 0
+    _textLockedUntil: 0,
+    waitingForSpeech: false,
+    speechToken: 0
   };
   updateCircuitPanel(mode);
 }
@@ -1318,6 +1345,15 @@ function updateCircuitPanel(mode) {
     currentEl.textContent = "Circuito curto registrado.";
     nextEl.textContent = "Use Reiniciar para repetir ou Fechar série para sair.";
     startBtn.textContent = "Iniciar";
+    restartBtn.textContent = "Reiniciar";
+    skipBtn.textContent = "Pular";
+    closeBtn.textContent = "×";
+    return;
+  }
+
+  if (state.waitingForSpeech) {
+    startBtn.textContent = "Aguarde";
+    startBtn.disabled = true;
     restartBtn.textContent = "Reiniciar";
     skipBtn.textContent = "Pular";
     closeBtn.textContent = "×";
